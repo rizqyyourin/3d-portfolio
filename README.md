@@ -41,7 +41,7 @@ Next.js App Router, TypeScript, Tailwind CSS, shadcn/Radix components, Lucide, M
 
 ## Model attribution
 
-[MacBook](https://sketchfab.com/3d-models/macbook-289c013e6c0541f498d4c6b40045db88) by [M I H](https://sketchfab.com/imamulhasan), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The owner-supplied `macbook/source/ASSET.glb` is served unchanged from `public/models/macbook.glb` (18.5 MB). Scene adaptations: scale, placement, custom screen overlay, lighting, and motion. Attribution is available through Credits and `public/models/LICENSE.md`.
+[MacBook](https://sketchfab.com/3d-models/macbook-289c013e6c0541f498d4c6b40045db88) by [M I H](https://sketchfab.com/imamulhasan), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The owner-supplied `macbook/source/ASSET.glb` is preserved in the source folder. Its web version at `public/models/macbook.glb` is 7.5 MB, with unchanged geometry and embedded textures resized to 2048px. Regenerate it with `node scripts/prepare-model.mjs`. Scene adaptations: scale, placement, custom screen overlay, lighting, and motion. Attribution is available through Credits and `public/models/LICENSE.md`.
 
 Project artwork is illustrative. No project/certificate URLs or downloadable CV were provided, so none are invented.
 

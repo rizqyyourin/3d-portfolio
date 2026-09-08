@@ -38,7 +38,7 @@ function Surface({ title, sub, index, onClick }: { title: string; sub: string; i
   const mat=useRef<THREE.MeshBasicMaterial>(null);
   const [hover,setHover]=useState(false);
   useEffect(()=>{const t=textureCard(title,sub,`0${index+1}`,index);if(mat.current){mat.current.map=t;mat.current.needsUpdate=true}return()=>t.dispose()},[title,sub,index]);
-  return <group onPointerOver={e=>{e.stopPropagation();setHover(true)}} onPointerOut={()=>setHover(false)} onClick={e=>{e.stopPropagation();onClick()}} scale={hover?1.045:1}>
+  return <group onPointerOver={e=>{e.stopPropagation();setHover(true)}} onPointerOut={()=>setHover(false)} onClick={e=>{e.stopPropagation();if(e.delta<=5)onClick()}} scale={hover?1.045:1}>
     <RoundedBox args={[3.8,2.54,.09]} radius={.08} smoothness={3}><meshStandardMaterial color={hover?'#9fb98a':'#aeb5a8'} metalness={.65} roughness={.25}/></RoundedBox>
     <mesh position={[0,0,.051]}><planeGeometry args={[3.72,2.46]}/><meshBasicMaterial ref={mat} toneMapped={false}/></mesh>
     <Html position={[0,-1.5,0]} center zIndexRange={[5,0]}><button className="object-label" onClick={onClick}>OPEN PROJECT <span>↗</span></button></Html>
@@ -46,22 +46,25 @@ function Surface({ title, sub, index, onClick }: { title: string; sub: string; i
 }
 
 function Laptop({ motion, reduced, chapter, onSelect, onReady }: Pick<Props,'motion'|'reduced'|'chapter'|'onSelect'|'onReady'>) {
+  const {size}=useThree();const mobile=size.width<=760;
   const {scene}=useGLTF(MODEL_URL);const model=useMemo(()=>scene.clone(true),[scene]);const root=useRef<THREE.Group>(null);const screen=useRef<THREE.MeshBasicMaterial>(null);
   useEffect(()=>{onReady()},[onReady]);
   useEffect(()=>{const t=screenTexture(chapter===1?1:chapter===2?2:0);if(screen.current){screen.current.map=t;screen.current.needsUpdate=true}return()=>t.dispose()},[chapter]);
   useFrame(({clock},delta)=>{
     if(!root.current)return;
     const p=motion.current.progress;
-    const anchors=[1,.57,.72,.5,.93];const rotations=[-.4,TAU-.25,TAU*1.5+.2,TAU*2+.15,TAU*3-.25];const i=Math.min(3,Math.floor(p));const f=THREE.MathUtils.smoothstep(p-i,0,1);const scale=THREE.MathUtils.lerp(anchors[i],anchors[i+1],f);
+    const anchors=mobile?[1,.38,.72,.35,.93]:[1,.57,.72,.5,.93];const rotations=[-.4,TAU-.25,TAU*1.5+.2,TAU*2+.15,TAU*3-.25];const i=Math.min(3,Math.floor(p));const f=THREE.MathUtils.smoothstep(p-i,0,1);const scale=THREE.MathUtils.lerp(anchors[i],anchors[i+1],f);
     root.current.scale.setScalar(scale);
     root.current.rotation.y=THREE.MathUtils.damp(root.current.rotation.y, reduced?-.25:THREE.MathUtils.lerp(rotations[i],rotations[i+1],f),5,delta);
     root.current.rotation.z=reduced?0:Math.sin(p*Math.PI)*.13-.07;
+    root.current.position.x=mobile?Math.sin(p*Math.PI/2)*.6:0;
+    root.current.position.z=mobile? -Math.max(0,1-Math.abs(p-1))*2-Math.max(0,1-Math.abs(p-3))*2:0;
     root.current.position.y=-.4+(reduced||motion.current.paused?0:Math.sin(clock.elapsedTime*.65)*.07);
   });
   return <group ref={root}>
     <group position={[0,-1.3,.5]}>
       <primitive object={model} scale={5.4/.31}/>
-      <mesh position={[0,2.05,-1.876]} onClick={e=>{e.stopPropagation();onSelect(chapter===4?'contact':chapter===2?'skills':'projects')}}>
+      <mesh position={[0,2.05,-1.876]} onClick={e=>{e.stopPropagation();if(e.delta<=5)onSelect(chapter===4?'contact':chapter===2?'skills':'projects')}}>
         <planeGeometry args={[4.97,3.08]}/><meshBasicMaterial ref={screen} toneMapped={false}/>
       </mesh>
     </group>
@@ -70,7 +73,9 @@ function Laptop({ motion, reduced, chapter, onSelect, onReady }: Pick<Props,'mot
 
 function Artifacts({ motion, chapter, onSelect, reduced }: Pick<Props,'motion'|'chapter'|'onSelect'|'reduced'>) {
   const hovered=useRef(false);const projects=useRef<THREE.Group>(null);const stack=useRef<THREE.Group>(null);const journey=useRef<THREE.Group>(null);
-  const {viewport}=useThree();const mobile=viewport.width<9;
+  const {size}=useThree();const mobile=size.width<=760;
+  const mobileSpread=Math.min(2.35,6.4*size.height/size.width*.26);
+  const mobileCardScale=Math.min(.72,6.4*size.height/size.width*.08);
   useFrame((_,delta)=>{
     const p=motion.current.progress;
     for(const [ref,center] of [[projects,1],[stack,2],[journey,3]] as const){if(ref.current){const a=Math.max(0,1-Math.abs(p-center)*1.6);ref.current.visible=a>.015;ref.current.scale.setScalar(Math.max(.001,a)*(ref===stack&&mobile?.65:1));}}
@@ -78,16 +83,16 @@ function Artifacts({ motion, chapter, onSelect, reduced }: Pick<Props,'motion'|'
   });
   return <>
     {chapter===1&&<group ref={projects}>
-      <group position={mobile?[-1.1,2.3,.2]:[-4.1,1.4,.4]} rotation={[.03,.2,-.08]} scale={mobile?.56:.9}><Surface title="A smarter service desk." sub="SOLUTIF / FULLSTACK / 2026" index={0} onClick={()=>onSelect('project-0')}/></group>
-      <group position={mobile?[1.15,.55,1.2]:[.2,2.85,-1.2]} rotation={[-.04,-.1,.04]} scale={mobile?.56:.84}><Surface title="Small bin. Big possibilities." sub="SMART BIN / MACHINE LEARNING" index={1} onClick={()=>onSelect('project-1')}/></group>
-      <group position={mobile?[-1,-1.35,1.8]:[4.1,.8,.8]} rotation={[.06,-.22,.09]} scale={mobile?.56:.9}><Surface title="Every attendance counts." sub="SIMTEG / FULLSTACK / 2024" index={2} onClick={()=>onSelect('project-2')}/></group>
+      <group position={mobile?[-.65,mobileSpread,.5]:[-4.1,1.4,.4]} rotation={[.03,.2,-.08]} scale={mobile?mobileCardScale:.9}><Surface title="A smarter service desk." sub="SOLUTIF / FULLSTACK / 2026" index={0} onClick={()=>onSelect('project-0')}/></group>
+      <group position={mobile?[.65,0,.6]:[.2,2.85,-1.2]} rotation={[-.04,-.1,.04]} scale={mobile?mobileCardScale:.84}><Surface title="Small bin. Big possibilities." sub="SMART BIN / MACHINE LEARNING" index={1} onClick={()=>onSelect('project-1')}/></group>
+      <group position={mobile?[-.65,-mobileSpread,.7]:[4.1,.8,.8]} rotation={[.06,-.22,.09]} scale={mobile?mobileCardScale:.9}><Surface title="Every attendance counts." sub="SIMTEG / FULLSTACK / 2024" index={2} onClick={()=>onSelect('project-2')}/></group>
     </group>}
     {chapter===2&&<group ref={stack}>
       {[0,1,2].map((n)=><mesh key={n} rotation={[1.2+n*.3,n*.55,.2]}><torusGeometry args={[3.6+n*.48,.013,8,120]}/><meshStandardMaterial color="#6d8d54" metalness={.7} roughness={.3}/></mesh>)}
-      {['TypeScript','Next.js / Nuxt.js','Go / PHP','PostgreSQL','Docker / K8s','WebSocket'].map((label,i)=>{const a=i/6*TAU;return <group key={label} position={[Math.cos(a)*3.7,Math.sin(a)*2.3,Math.sin(a+.4)*2]}><mesh onClick={()=>onSelect('skills')}><icosahedronGeometry args={[.17,0]}/><meshStandardMaterial color="#809d62" metalness={.8} roughness={.2}/></mesh><Html center position={[0,.38,0]} zIndexRange={[5,0]}><button className="skill-orbit-label" onPointerEnter={()=>{hovered.current=true}} onPointerLeave={()=>{hovered.current=false}} onFocus={()=>{hovered.current=true}} onBlur={()=>{hovered.current=false}} onClick={()=>onSelect('skills')}>{label}</button></Html></group>})}
+      {['TypeScript','Next.js / Nuxt.js','Go / PHP','PostgreSQL','Docker / K8s','WebSocket'].map((label,i)=>{const a=i/6*TAU;return <group key={label} position={[Math.cos(a)*3.7,Math.sin(a)*2.3,Math.sin(a+.4)*2]}><mesh onClick={e=>{if(e.delta<=5)onSelect('skills')}}><icosahedronGeometry args={[.17,0]}/><meshStandardMaterial color="#809d62" metalness={.8} roughness={.2}/></mesh><Html center position={[0,.38,0]} zIndexRange={[5,0]}><button className="skill-orbit-label" onPointerEnter={()=>{hovered.current=true}} onPointerLeave={()=>{hovered.current=false}} onFocus={()=>{hovered.current=true}} onBlur={()=>{hovered.current=false}} onClick={()=>onSelect('skills')}>{label}</button></Html></group>})}
     </group>}
     {chapter===3&&<group ref={journey}>
-      {[['2021 — 2025','DIPONEGORO','Computer Engineering'],['2024','BINTANG PELAJAR','Fullstack internship'],['2025 — 2026','SOLUTIF','Fullstack / MagangHub']].map(([year,title,sub],i)=><group key={year} position={mobile?[0,2.3-i*1.5,1]:[(i-1)*4,1.1+Math.sin(i)*.9,0]}><mesh rotation={[.2,.4,.12]} onClick={()=>onSelect('journey')}><boxGeometry args={[.64,.64,.64]}/><meshStandardMaterial color={i===2?'#819d61':'#c9ccc3'} metalness={.8} roughness={.2}/></mesh><Html center position={[0,-.8,0]} zIndexRange={[5,0]}><button className="milestone" onClick={()=>onSelect('journey')}><span>{year}</span><strong>{title}</strong><small>{sub}</small></button></Html></group>)}
+      {[['2021 — 2025','DIPONEGORO','Computer Engineering'],['2024','BINTANG PELAJAR','Fullstack internship'],['2025 — 2026','SOLUTIF','Fullstack / MagangHub']].map(([year,title,sub],i)=><group key={year} position={mobile?[0,mobileSpread*(1-i),1]:[(i-1)*4,1.1+Math.sin(i)*.9,0]}><mesh position={mobile?[-2.05,0,0]:[0,0,0]} rotation={[.2,.4,.12]} onClick={e=>{if(e.delta<=5)onSelect('journey')}}><boxGeometry args={[.64,.64,.64]}/><meshStandardMaterial color={i===2?'#819d61':'#c9ccc3'} metalness={.8} roughness={.2}/></mesh><Html center position={mobile?[.2,0,.2]:[0,-.8,0]} zIndexRange={[5,0]}><button className="milestone" onClick={()=>onSelect('journey')}><span>{year}</span><strong>{title}</strong><small>{sub}</small></button></Html></group>)}
     </group>}
   </>;
 }
@@ -103,10 +108,13 @@ function CameraRig({motion,free,reduced}:Pick<Props,'motion'|'free'|'reduced'>){
   const target=useRef(new THREE.Vector3());const location=useRef(new THREE.Vector3());
   useFrame(({camera,size,pointer},delta)=>{
     if(free)return;
-    const p=motion.current.progress;const i=Math.min(3,Math.floor(p));const t=THREE.MathUtils.smoothstep(p-i,0,1);const mobile=size.width<760;
+    const p=motion.current.progress;const i=Math.min(3,Math.floor(p));const t=THREE.MathUtils.smoothstep(p-i,0,1);const mobile=size.width<=760;
     const positions=[[.2,1.6,10.3],[0,1.6,14],[2.5,5.5,12],[0,2.2,14],[0,1.2,9.7]];
     const from=positions[i],to=positions[i+1];
-    location.current.set(THREE.MathUtils.lerp(from[0],to[0],t),THREE.MathUtils.lerp(from[1],to[1],t),THREE.MathUtils.lerp(from[2],to[2],t)*(mobile?1.8:1));
+    const widths=[7.3,6.4,7,6.4,7.3];
+    const mobileWidth=THREE.MathUtils.lerp(widths[i],widths[i+1],t);
+    const mobileDistance=mobileWidth/(2*Math.tan(THREE.MathUtils.degToRad(42/2))*(size.width/size.height));
+    location.current.set(mobile?0:THREE.MathUtils.lerp(from[0],to[0],t),mobile?.7:THREE.MathUtils.lerp(from[1],to[1],t),mobile?mobileDistance:THREE.MathUtils.lerp(from[2],to[2],t));
     if(!reduced){location.current.x+=pointer.x*.22;location.current.y+=pointer.y*.12;camera.position.lerp(location.current,1-Math.exp(-delta*4));}else camera.position.copy(location.current);
     target.current.set(0,.1,0);camera.lookAt(target.current);
   });return null;

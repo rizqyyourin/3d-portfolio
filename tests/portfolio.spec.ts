@@ -7,6 +7,7 @@ test('scroll journey changes scenes and keeps project details accessible', async
   await page.goto('/');
   expect((await asset).ok()).toBe(true);
   await expect(page.getByRole('status')).toHaveCount(0, { timeout: 20000 });
+  await expect(page.getByRole('alert', { name: '3D loading error' })).toHaveCount(0);
   await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Enter');
   await page.screenshot({ path: 'test-results/immersive-desktop.png' });
   await page.mouse.wheel(0, 1300);
@@ -29,7 +30,7 @@ test('scroll journey changes scenes and keeps project details accessible', async
   await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Journey');
   await page.getByRole('button', { name: 'Explore the journey', exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('GPA 3.64 / 4.00');
-  await page.getByText('Certifications', { exact: true }).click();
+  await page.locator('summary').filter({ hasText: 'Certifications' }).click();
   await expect(page.getByText('Oracle Database Foundation', { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Go to Connect', exact: true }).click();
@@ -40,16 +41,15 @@ test('scroll journey changes scenes and keeps project details accessible', async
   expect(errors).toEqual([]);
 });
 
-test('mobile menu, free orbit and reduced motion navigation work', async ({ page }) => {
+test('mobile menu, scene cards and reduced motion navigation work', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.getByRole('status')).toHaveCount(0, { timeout: 20000 });
+  await expect(page.getByRole('alert', { name: '3D loading error' })).toHaveCount(0);
   await page.screenshot({ path: 'test-results/immersive-mobile.png' });
-  await page.getByRole('button', { name: 'Explore freely', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Return to scroll journey' })).toHaveAttribute('aria-pressed', 'true');
-  await page.mouse.move(190,350); await page.mouse.down(); await page.mouse.move(280,400,{steps:10}); await page.mouse.up();
-  await page.getByRole('button', { name: 'Done', exact: false }).click();
+  await expect(page.locator('.scene-tools')).toBeHidden();
+  await expect(page.locator('.footer-meta')).toBeVisible();
   await page.getByRole('button', { name: 'Open chapter menu' }).click();
   await page.getByRole('navigation', { name: 'Chapter index' }).getByRole('button', { name: '02 Work' }).click();
   await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Work');
@@ -58,13 +58,22 @@ test('mobile menu, free orbit and reduced motion navigation work', async ({ page
   await page.getByRole('button', { name: /Smart Bin · Inorganic Waste Classification/ }).click();
   await expect(page.getByRole('dialog')).toContainText('MobileNetV2');
   await page.getByRole('button', { name: 'Close details' }).click();
+  await page.getByRole('button', { name: 'Go to Journey', exact: true }).click();
+  await expect(page.locator('.milestone')).toHaveCount(3);
+  await page.waitForTimeout(1000);
+  const cards=await page.locator('.milestone').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right}}));
+  for(let i=0;i<cards.length;i++){
+    expect(cards[i].left).toBeGreaterThanOrEqual(0);
+    expect(cards[i].right).toBeLessThanOrEqual(390);
+    if(i)expect(cards[i].top-cards[i-1].bottom).toBeGreaterThan(8);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('model loading failure provides retry and content access', async ({ page }) => {
   await page.route('**/models/macbook.glb', route => route.abort());
   await page.goto('/');
-  await expect(page.getByRole('alert')).toContainText('couldn’t load', { timeout: 20000 });
+  await expect(page.getByRole('alert', {name: '3D loading error'})).toContainText('couldn’t load', { timeout: 20000 });
   await page.getByRole('button', { name: 'Explore work', exact: false }).click();
   await expect(page.getByRole('dialog')).toContainText('Ideas, made real.');
 });
