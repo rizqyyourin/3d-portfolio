@@ -1,0 +1,70 @@
+import { test, expect } from '@playwright/test';
+
+test('scroll journey changes scenes and keeps project details accessible', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', e => errors.push(e.message));
+  const asset = page.waitForResponse(r => r.url().endsWith('/models/macbook.glb'));
+  await page.goto('/');
+  expect((await asset).ok()).toBe(true);
+  await expect(page.getByRole('status')).toHaveCount(0, { timeout: 20000 });
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Enter');
+  await page.screenshot({ path: 'test-results/immersive-desktop.png' });
+  await page.mouse.wheel(0, 1300);
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Work');
+  await page.getByRole('button', { name: 'Go to Work', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'OPEN PROJECT', exact: false })).toHaveCount(3);
+  await page.getByRole('button', { name: 'Explore the projects', exact: true }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: /Multi-tenant Ticketing Platform/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('schema-based tenant isolation');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Go to Stack', exact: true }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Stack');
+  await expect(page.getByRole('button', { name: 'TypeScript', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Pause ambient motion' }).click();
+  await page.getByRole('button', { name: 'TypeScript', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('Kubernetes');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Go to Journey', exact: true }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Journey');
+  await page.getByRole('button', { name: 'Explore the journey', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('GPA 3.64 / 4.00');
+  await page.getByText('Certifications', { exact: true }).click();
+  await expect(page.getByText('Oracle Database Foundation', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Go to Connect', exact: true }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Connect');
+  await page.getByRole('button', { name: 'Start a conversation', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'rizqyyourin6@gmail.com' })).toHaveAttribute('href', 'mailto:rizqyyourin6@gmail.com');
+  await page.keyboard.press('Escape');
+  expect(errors).toEqual([]);
+});
+
+test('mobile menu, free orbit and reduced motion navigation work', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.getByRole('status')).toHaveCount(0, { timeout: 20000 });
+  await page.screenshot({ path: 'test-results/immersive-mobile.png' });
+  await page.getByRole('button', { name: 'Explore freely', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Return to scroll journey' })).toHaveAttribute('aria-pressed', 'true');
+  await page.mouse.move(190,350); await page.mouse.down(); await page.mouse.move(280,400,{steps:10}); await page.mouse.up();
+  await page.getByRole('button', { name: 'Done', exact: false }).click();
+  await page.getByRole('button', { name: 'Open chapter menu' }).click();
+  await page.getByRole('navigation', { name: 'Chapter index' }).getByRole('button', { name: '02 Work' }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-chapter', 'Work');
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByRole('button', { name: 'Explore the projects', exact: true }).click();
+  await page.getByRole('button', { name: /Smart Bin · Inorganic Waste Classification/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('MobileNetV2');
+  await page.getByRole('button', { name: 'Close details' }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('model loading failure provides retry and content access', async ({ page }) => {
+  await page.route('**/models/macbook.glb', route => route.abort());
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('couldn’t load', { timeout: 20000 });
+  await page.getByRole('button', { name: 'Explore work', exact: false }).click();
+  await expect(page.getByRole('dialog')).toContainText('Ideas, made real.');
+});

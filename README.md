@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yourin — Beyond the Screen
 
-## Getting Started
+An immersive, full-viewport 3D portfolio for Ahmad Rizqy Yourin. Scrolling moves a persistent camera through five chapters; the MacBook turns through multiple revolutions and is surrounded by interactive project surfaces, a toolkit orbit, and career milestones. Detailed CV content opens only on request.
 
-First, run the development server:
+## Run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run lint
+npx playwright install chromium
+npm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Interactions
 
-## Learn More
+- Scroll or swipe vertically to travel through Enter, Work, Stack, Journey, and Connect.
+- Chapter navigation, the Index menu, arrow keys, Page Up/Down, Home, and End provide direct navigation.
+- Free Explore enables 360-degree manual orbit. Return to Scroll Mode to restore the camera choreography.
+- Click a project surface, floating label, skill node, or career milestone to open details.
+- Pause stops ambient motion. Reduced-motion users get immediate navigation and camera placement without float or continuous rotation.
+- Keyboard-accessible chapter actions expose the same information as the 3D objects.
+- The model load failure state offers retry and direct content access.
 
-To learn more about Next.js, take a look at the following resources:
+## Stack & files
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Next.js App Router, TypeScript, Tailwind CSS, shadcn/Radix components, Lucide, Motion, Three.js, React Three Fiber, and Drei. No external font or model requests are needed at runtime for the 3D scene.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/app/page.tsx`: journey navigation, scroll state, accessible content dialogs.
+- `src/components/macbook.tsx`: camera choreography, imported model, interactive 3D artifacts.
+- `src/lib/journey.ts`: chapter labels.
+- `src/lib/portfolio.ts`: project, skill, and certification data.
+- `src/lib/screen-texture.ts`: generated display artwork.
+- `src/app/globals.css`: full-screen composition and responsive HUD.
 
-## Deploy on Vercel
+## Model attribution
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+[MacBook](https://sketchfab.com/3d-models/macbook-289c013e6c0541f498d4c6b40045db88) by [M I H](https://sketchfab.com/imamulhasan), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The owner-supplied `macbook/source/ASSET.glb` is served unchanged from `public/models/macbook.glb` (18.5 MB). Scene adaptations: scale, placement, custom screen overlay, lighting, and motion. Attribution is available through Credits and `public/models/LICENSE.md`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Project artwork is illustrative. No project/certificate URLs or downloadable CV were provided, so none are invented.
+
+Visual direction references: [United Carriers](https://unitedcarriers.com) and [NexStudio](https://nexstudio.tech). The portfolio uses original UI, scene choreography, and artwork; no assets from those sites are copied.
