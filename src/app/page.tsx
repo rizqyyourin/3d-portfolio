@@ -10,6 +10,7 @@ import { chapters, type JourneyDetail, type JourneyMotion } from '@/lib/journey'
 import { projects, skills, certifications } from '@/lib/portfolio';
 
 const World=dynamic(()=>import('@/components/macbook'),{ssr:false});
+const RESUME_URL='https://resume.yourin.my.id';
 
 export default function Home(){
   const [chapter,setChapter]=useState(0);const [free,setFree]=useState(false);const [paused,setPaused]=useState(false);const [menu,setMenu]=useState(false);const [detail,setDetail]=useState<JourneyDetail>(null);const [loaded,setLoaded]=useState(false);const [failed,setFailed]=useState(false);const [reset,setReset]=useState(0);const [copied,setCopied]=useState(false);
@@ -27,7 +28,7 @@ export default function Home(){
   useEffect(()=>{const onKey=(e:KeyboardEvent)=>{if(menu||detail||e.altKey||e.metaKey||e.ctrlKey||(e.target instanceof HTMLElement&&e.target.closest('button,a,input,textarea')))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(Math.min(chapter+1,4))}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(Math.max(chapter-1,0))}if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(4)}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[chapter,detail,go,menu]);
   async function copy(){try{await navigator.clipboard.writeText('rizqyyourin6@gmail.com');setCopied(true);setTimeout(()=>setCopied(false),2200)}catch{window.location.href='mailto:rizqyyourin6@gmail.com'}}
   const data=chapters[chapter];
-  function action(){if(chapter===0)go(1);else setDetail((['projects','skills','journey','contact'] as const)[chapter-1])}
+  function action(){if(chapter===0||chapter===1)window.location.assign(RESUME_URL);else setDetail((['projects','skills','journey','contact'] as const)[chapter-1])}
   return <>
     <a className="skip-link" href="#chapter-controls">Skip to chapter navigation</a>
     <div className="scroll-journey" aria-hidden="true"/>
