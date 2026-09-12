@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Html, Lightformer, OrbitControls, RoundedBox, useGLTF } from '@react-three/drei';
 import { Component, Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
 import * as THREE from 'three';
-import { screenTexture } from '@/lib/screen-texture';
+import { screenTexture, updateScreenTexture } from '@/lib/screen-texture';
 import type { JourneyDetail, JourneyMotion } from '@/lib/journey';
 
 const MODEL_URL = '/models/macbook.glb';
@@ -49,9 +49,15 @@ function Laptop({ motion, reduced, chapter, onSelect, onReady }: Pick<Props,'mot
   const {size}=useThree();const mobile=size.width<=760;
   const {scene}=useGLTF(MODEL_URL);const model=useMemo(()=>scene.clone(true),[scene]);const root=useRef<THREE.Group>(null);const screen=useRef<THREE.MeshBasicMaterial>(null);
   useEffect(()=>{onReady()},[onReady]);
-  useEffect(()=>{const t=screenTexture(chapter===1?1:chapter===2?2:0);if(screen.current){screen.current.map=t;screen.current.needsUpdate=true}return()=>t.dispose()},[chapter]);
+  const typewriter=useRef({elapsed:0,lastFrame:-1});
+  useEffect(()=>{const mode=chapter===1?1:chapter===2?2:0;const t=screenTexture(mode,mode===0&&!reduced?0:undefined);typewriter.current={elapsed:0,lastFrame:-1};if(screen.current){screen.current.map=t;screen.current.needsUpdate=true}return()=>t.dispose()},[chapter,reduced]);
   useFrame(({clock},delta)=>{
     if(!root.current)return;
+    if(chapter===0&&screen.current?.map instanceof THREE.CanvasTexture&&!reduced&&!motion.current.paused){
+      const state=typewriter.current;state.elapsed+=delta;
+      const frame=Math.min(17,Math.floor(state.elapsed/0.075));
+      if(frame!==state.lastFrame){state.lastFrame=frame;updateScreenTexture(screen.current.map,0,frame+1)}
+    }
     const p=motion.current.progress;
     const anchors=mobile?[1,.38,.72,.35,.93]:[1,.57,.72,.5,.93];const rotations=[-.4,TAU-.25,TAU*1.5+.2,TAU*2+.15,TAU*3-.25];const i=Math.min(3,Math.floor(p));const f=THREE.MathUtils.smoothstep(p-i,0,1);const scale=THREE.MathUtils.lerp(anchors[i],anchors[i+1],f);
     root.current.scale.setScalar(scale);
@@ -63,8 +69,7 @@ function Laptop({ motion, reduced, chapter, onSelect, onReady }: Pick<Props,'mot
   });
   return <group ref={root}>
     <group position={[0,-1.3,.5]}>
-      <primitive object={model} scale={5.4/.31}/>
-      <mesh position={[0,2.05,-1.876]} onClick={e=>{e.stopPropagation();if(e.delta<=5)onSelect(chapter===4?'contact':chapter===2?'skills':'projects')}}>
+      <primitive object={model} scale={5.4/.31}/><mesh position={[0,2.05,-1.876]} onClick={e=>{e.stopPropagation();if(e.delta<=5)onSelect(chapter===2?'skills':'projects')}}>
         <planeGeometry args={[4.97,3.08]}/><meshBasicMaterial ref={screen} toneMapped={false}/>
       </mesh>
     </group>
@@ -92,7 +97,7 @@ function Artifacts({ motion, chapter, onSelect, reduced }: Pick<Props,'motion'|'
       {['TypeScript','Next.js / Nuxt.js','Go / PHP','PostgreSQL','Docker / K8s','WebSocket'].map((label,i)=>{const a=i/6*TAU;return <group key={label} position={[Math.cos(a)*3.7,Math.sin(a)*2.3,Math.sin(a+.4)*2]}><mesh onClick={e=>{if(e.delta<=5)onSelect('skills')}}><icosahedronGeometry args={[.17,0]}/><meshStandardMaterial color="#809d62" metalness={.8} roughness={.2}/></mesh><Html center position={[0,.38,0]} zIndexRange={[5,0]}><button className="skill-orbit-label" onPointerEnter={()=>{hovered.current=true}} onPointerLeave={()=>{hovered.current=false}} onFocus={()=>{hovered.current=true}} onBlur={()=>{hovered.current=false}} onClick={()=>onSelect('skills')}>{label}</button></Html></group>})}
     </group>}
     {chapter===3&&<group ref={journey}>
-      {[['2021 — 2025','DIPONEGORO','Computer Engineering'],['2024','BINTANG PELAJAR','Fullstack internship'],['2025 — 2026','SOLUTIF','Fullstack / MagangHub']].map(([year,title,sub],i)=><group key={year} position={mobile?[0,mobileSpread*(1-i),1]:[(i-1)*4,1.1+Math.sin(i)*.9,0]}><mesh position={mobile?[-2.05,0,0]:[0,0,0]} rotation={[.2,.4,.12]} onClick={e=>{if(e.delta<=5)onSelect('journey')}}><boxGeometry args={[.64,.64,.64]}/><meshStandardMaterial color={i===2?'#819d61':'#c9ccc3'} metalness={.8} roughness={.2}/></mesh><Html center position={mobile?[.2,0,.2]:[0,-.8,0]} zIndexRange={[5,0]}><button className="milestone" onClick={()=>onSelect('journey')}><span>{year}</span><strong>{title}</strong><small>{sub}</small></button></Html></group>)}
+      {[['2021 to 2025','DIPONEGORO','Computer Engineering'],['2024','BINTANG PELAJAR','Fullstack internship'],['2025 to 2026','SOLUTIF','Fullstack / MagangHub']].map(([year,title,sub],i)=><group key={year} position={mobile?[0,mobileSpread*(1-i),1]:[(i-1)*4,1.1+Math.sin(i)*.9,0]}><mesh position={mobile?[-2.05,0,0]:[0,0,0]} rotation={[.2,.4,.12]} onClick={e=>{if(e.delta<=5)onSelect('journey')}}><boxGeometry args={[.64,.64,.64]}/><meshStandardMaterial color={i===2?'#819d61':'#c9ccc3'} metalness={.8} roughness={.2}/></mesh><Html center position={mobile?[.2,0,.2]:[0,-.8,0]} zIndexRange={[5,0]}><button className="milestone" onClick={()=>onSelect('journey')}><span>{year}</span><strong>{title}</strong><small>{sub}</small></button></Html></group>)}
     </group>}
   </>;
 }

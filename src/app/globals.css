@@ -110,3 +110,6 @@
   .milestone{min-height:80px;padding:12px 15px}
 }
 .index-footer>div{display:flex;align-items:center;gap:18px}.index-footer button{font:inherit;letter-spacing:inherit;color:inherit}
+
+/* Keep muted interface text readable against the light workspace surfaces. */
+.header-description,.availability,.scene-index>span:last-child,.scroll-instruction>span:last-child,.scroll-instruction small,.nav-name,.footer-meta,.index-footer,.index-description,.detail-eyebrow,.detail-description,.journey-detail p,.credit-text,.contact-links a,.contact-location,.soft-skills-detail,.project-index small,.journey-detail article>span,.certificates summary span,.certificates>div>span{color:#59664f}

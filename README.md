@@ -1,26 +1,26 @@
 # Yourin — Beyond the Screen
 
-An immersive, full-viewport 3D portfolio for Ahmad Rizqy Yourin. Scrolling moves a persistent camera through five chapters; the MacBook turns through multiple revolutions and is surrounded by interactive project surfaces, a toolkit orbit, and career milestones. Detailed CV content opens only on request.
+An immersive, full-viewport 3D portfolio for Ahmad Rizqy Yourin. Scrolling moves a persistent camera through three chapters; the MacBook turns through multiple revolutions and is surrounded by interactive project surfaces and a toolkit orbit. Detailed CV content opens only on request.
 
 ## Run
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open http://localhost:3000.
 
 ```bash
-npm run build
-npm run lint
-npx playwright install chromium
-npm test
+pnpm build
+pnpm lint
+pnpm exec playwright install chromium
+pnpm test
 ```
 
 ## Interactions
 
-- Scroll or swipe vertically to travel through Enter, Work, Stack, Journey, and Connect.
+- Scroll or swipe vertically to travel through Enter, Work, and Stack.
 - Chapter navigation, the Index menu, arrow keys, Page Up/Down, Home, and End provide direct navigation.
 - Free Explore enables 360-degree manual orbit. Return to Scroll Mode to restore the camera choreography.
 - Click a project surface, floating label, skill node, or career milestone to open details.

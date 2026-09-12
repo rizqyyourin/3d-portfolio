@@ -1,0 +1,328 @@
+{
+  "communities": {
+    "0": [
+      "class_variance_authority",
+      "clsx",
+      "lucide_react",
+      "motion",
+      "next",
+      "package_dependencies",
+      "package_dependencies_class_variance_authority",
+      "package_dependencies_clsx",
+      "package_dependencies_lucide_react",
+      "package_dependencies_motion",
+      "package_dependencies_next",
+      "package_dependencies_radix_ui_react_dialog",
+      "package_dependencies_radix_ui_react_slot",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_react_three_drei",
+      "package_dependencies_react_three_fiber",
+      "package_dependencies_tailwind_merge",
+      "package_dependencies_three",
+      "radix_ui_react_dialog",
+      "radix_ui_react_slot",
+      "react",
+      "react_dom",
+      "react_three_drei",
+      "react_three_fiber",
+      "tailwind_merge",
+      "three"
+    ],
+    "1": [
+      "eslint",
+      "eslint_config_next",
+      "package_devdependencies",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_playwright_test",
+      "package_devdependencies_sharp",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_postcss",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_types_three",
+      "package_devdependencies_typescript",
+      "playwright_test",
+      "sharp",
+      "tailwindcss",
+      "tailwindcss_postcss",
+      "types_node",
+      "types_react",
+      "types_react_dom",
+      "types_three",
+      "typescript"
+    ],
+    "2": [
+      "src_app_page",
+      "src_app_page_detailcontent",
+      "src_components_ui_button",
+      "src_components_ui_button_button",
+      "src_components_ui_button_buttonvariants",
+      "src_components_ui_dialog",
+      "src_components_ui_dialog_dialog",
+      "src_components_ui_dialog_dialogcontent",
+      "src_components_ui_dialog_dialogdescription",
+      "src_components_ui_dialog_dialogtitle",
+      "src_lib_journey",
+      "src_lib_journey_chapters",
+      "src_lib_journey_journeydetail",
+      "src_lib_journey_journeymotion",
+      "src_lib_portfolio",
+      "src_lib_portfolio_certifications",
+      "src_lib_portfolio_projects",
+      "src_lib_portfolio_skills",
+      "src_lib_utils",
+      "src_lib_utils_cn"
+    ],
+    "3": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target"
+    ],
+    "4": [
+      "src_app_page_world",
+      "src_components_macbook",
+      "src_components_macbook_artifacts",
+      "src_components_macbook_atmosphere",
+      "src_components_macbook_camerarig",
+      "src_components_macbook_laptop",
+      "src_components_macbook_macbook",
+      "src_components_macbook_props",
+      "src_components_macbook_sceneboundary",
+      "src_components_macbook_sceneboundary_componentdidcatch",
+      "src_components_macbook_sceneboundary_getderivedstatefromerror",
+      "src_components_macbook_sceneboundary_render",
+      "src_components_macbook_surface",
+      "src_components_macbook_texturecard",
+      "src_lib_screen_texture",
+      "src_lib_screen_texture_drawscreen",
+      "src_lib_screen_texture_screentexture",
+      "src_lib_screen_texture_updatescreentexture"
+    ],
+    "5": [
+      "components",
+      "components_aliases",
+      "components_aliases_components",
+      "components_aliases_hooks",
+      "components_aliases_lib",
+      "components_aliases_ui",
+      "components_aliases_utils",
+      "components_iconlibrary",
+      "components_rsc",
+      "components_schema",
+      "components_style",
+      "components_tailwind",
+      "components_tailwind_basecolor",
+      "components_tailwind_config",
+      "components_tailwind_css",
+      "components_tailwind_cssvariables",
+      "components_tsx"
+    ],
+    "6": [
+      "package",
+      "package_name",
+      "package_packagemanager",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_model_prepare",
+      "package_scripts_start",
+      "package_scripts_test",
+      "package_version"
+    ],
+    "7": [
+      "ref_mts",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "8": [
+      "scripts_prepare_model",
+      "scripts_prepare_model_bin",
+      "scripts_prepare_model_binary",
+      "scripts_prepare_model_binaryheader",
+      "scripts_prepare_model_chunks",
+      "scripts_prepare_model_gltf",
+      "scripts_prepare_model_header",
+      "scripts_prepare_model_json",
+      "scripts_prepare_model_jsonlength",
+      "scripts_prepare_model_raw"
+    ],
+    "9": [
+      "src_app_layout",
+      "src_app_layout_geist",
+      "src_app_layout_metadata",
+      "src_app_layout_mono",
+      "src_app_layout_rootlayout"
+    ],
+    "10": [
+      "src_app_page_home",
+      "src_app_page_home_action",
+      "src_app_page_home_copy"
+    ],
+    "11": [
+      "eslint_config",
+      "eslint_config_eslintconfig"
+    ],
+    "12": [
+      "next_config",
+      "next_config_nextconfig"
+    ],
+    "13": [
+      "postcss_config",
+      "postcss_config_config"
+    ],
+    "14": [
+      "playwright_config"
+    ],
+    "15": [
+      "tests_portfolio_spec"
+    ]
+  },
+  "cohesion": {
+    "0": 0.07407407407407407,
+    "1": 0.08695652173913043,
+    "2": 0.18947368421052632,
+    "3": 0.10526315789473684,
+    "4": 0.1568627450980392,
+    "5": 0.11764705882352941,
+    "6": 0.16666666666666666,
+    "7": 0.2,
+    "8": 0.2,
+    "9": 0.4,
+    "10": 0.6666666666666666,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0
+  },
+  "gods": [
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 7
+    },
+    {
+      "id": "tsconfig_include",
+      "label": "include",
+      "degree": 7
+    },
+    {
+      "id": "components_aliases",
+      "label": "aliases",
+      "degree": 6
+    },
+    {
+      "id": "components_tailwind",
+      "label": "tailwind",
+      "degree": 5
+    },
+    {
+      "id": "src_lib_utils_cn",
+      "label": "cn()",
+      "degree": 5
+    },
+    {
+      "id": "src_components_macbook_sceneboundary",
+      "label": "SceneBoundary",
+      "degree": 4
+    },
+    {
+      "id": "src_components_ui_button_button",
+      "label": "Button()",
+      "degree": 4
+    },
+    {
+      "id": "src_lib_screen_texture_screentexture",
+      "label": "screenTexture()",
+      "degree": 4
+    },
+    {
+      "id": "src_lib_screen_texture_updatescreentexture",
+      "label": "updateScreenTexture()",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Laptop()",
+      "target": "screenTexture()",
+      "source_files": [
+        "src/components/macbook.tsx",
+        "src/lib/screen-texture.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    },
+    {
+      "source": "Laptop()",
+      "target": "updateScreenTexture()",
+      "source_files": [
+        "src/components/macbook.tsx",
+        "src/lib/screen-texture.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    },
+    {
+      "source": "Button()",
+      "target": "cn()",
+      "source_files": [
+        "src/components/ui/button.tsx",
+        "src/lib/utils.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    },
+    {
+      "source": "DialogContent()",
+      "target": "cn()",
+      "source_files": [
+        "src/components/ui/dialog.tsx",
+        "src/lib/utils.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
