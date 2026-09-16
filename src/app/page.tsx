@@ -1,62 +1,130 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useReducedMotion } from 'motion/react';
-import { ArrowDown, ArrowLeft, ArrowUpRight, Check, Copy, Expand, Menu, MoveUpRight, Pause, Play, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
-import { chapters, type JourneyDetail, type JourneyMotion } from '@/lib/journey';
-import { projects, skills, certifications } from '@/lib/portfolio';
+import { useEffect, useSyncExternalStore } from 'react';
+import type { ComponentType } from 'react';
+import Image from 'next/image';
+import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, Moon, PaperPlaneTilt, Stack, Sun, ThreadsLogoIcon, Wrench } from '@phosphor-icons/react';
+import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
+import { skills } from '@/lib/portfolio';
 
-const World=dynamic(()=>import('@/components/macbook'),{ssr:false});
-const RESUME_URL='https://resume.yourin.my.id';
-
-export default function Home(){
-  const [chapter,setChapter]=useState(0);const [free,setFree]=useState(false);const [paused,setPaused]=useState(false);const [menu,setMenu]=useState(false);const [detail,setDetail]=useState<JourneyDetail>(null);const [loaded,setLoaded]=useState(false);const [failed,setFailed]=useState(false);const [reset,setReset]=useState(0);const [copied,setCopied]=useState(false);
-  const drag=useRef({x:0,y:0,moved:false});
-  const reduced=useReducedMotion();const scene=useRef<JourneyMotion>({progress:0,paused:false});const progressBar=useRef<HTMLDivElement>(null);const scrollFrame=useRef(0);
-  const ready=useCallback(()=>{setLoaded(true);setFailed(false)},[]);const fail=useCallback(()=>{setFailed(true);setLoaded(true)},[]);
-  useEffect(()=>{scene.current.paused=paused||!!reduced||!!detail||menu},[paused,reduced,detail,menu]);
-  useEffect(()=>{
-    const update=()=>{const range=document.documentElement.scrollHeight-window.innerHeight;const p=Math.max(0,Math.min(2,window.scrollY/Math.max(1,range)*2));scene.current.progress=p;setChapter(Math.round(p));if(progressBar.current)progressBar.current.style.transform=`scaleX(${p/2})`;};
-    const scroll=()=>{cancelAnimationFrame(scrollFrame.current);scrollFrame.current=requestAnimationFrame(update)};
-    update();window.addEventListener('scroll',scroll,{passive:true});window.addEventListener('resize',scroll);
-    return()=>{window.removeEventListener('scroll',scroll);window.removeEventListener('resize',scroll);cancelAnimationFrame(scrollFrame.current)};
-  },[]);
-  const go=useCallback((index:number)=>{setFree(false);setMenu(false);window.scrollTo({top:(document.documentElement.scrollHeight-window.innerHeight)*index/2,behavior:reduced?'instant':'smooth'})},[reduced]);
-  useEffect(()=>{const onKey=(e:KeyboardEvent)=>{if(menu||detail||e.altKey||e.metaKey||e.ctrlKey||(e.target instanceof HTMLElement&&e.target.closest('button,a,input,textarea')))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(Math.min(chapter+1,2))}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(Math.max(chapter-1,0))}if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(2)}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[chapter,detail,go,menu]);
-  async function copy(){try{await navigator.clipboard.writeText('rizqyyourin6@gmail.com');setCopied(true);setTimeout(()=>setCopied(false),2200)}catch{window.location.href='mailto:rizqyyourin6@gmail.com'}}
-  const data=chapters[chapter];
-  function action(){if(chapter===0||chapter===1)window.location.assign(RESUME_URL);else setDetail((['projects','skills'] as const)[chapter-1])}
-  return <>
-    <a className="skip-link" href="#chapter-controls">Skip to chapter navigation</a>
-    <div className="scroll-journey" aria-hidden="true"/>
-    <main className={`experience ${free?'is-exploring':''}`} data-chapter={data.name}>
-      <div className="ambient-wash"/>
-      <div className="backdrop-type" aria-hidden="true"><div key={chapter} className="chapter-reveal"><span>{data.title[0]}</span><span>{data.title[1]}</span></div></div>
-      <div className="world" onPointerDownCapture={e=>{drag.current={x:e.clientX,y:e.clientY,moved:false}}} onPointerMoveCapture={e=>{if(e.buttons&&Math.hypot(e.clientX-drag.current.x,e.clientY-drag.current.y)>7)drag.current.moved=true}} onClickCapture={e=>{if(drag.current.moved){e.preventDefault();e.stopPropagation()}}} aria-label="Interactive 3D portfolio. Scroll to travel; select objects to explore." style={{touchAction:free?'none':'pan-y'}}><World motion={scene} chapter={chapter} free={free} reduced={!!reduced} onSelect={setDetail} onReady={ready} onError={fail} reset={reset}/></div>
-      <div className="vignette" aria-hidden="true"/>
-      <header className="hud-header"><button className="wordmark" aria-label="Return to beginning" onClick={()=>go(0)}>yourin<span>®</span></button><span className="header-description">INDEPENDENT MIND.<br/>FULLSTACK DEVELOPER.</span><div className="header-right"><span className="availability"><i/> OPEN TO OPPORTUNITIES</span><button className="index-button" onClick={()=>setMenu(true)} aria-label="Open chapter menu">INDEX <Menu size={17}/></button></div></header>
-      <div className="scene-index" aria-hidden="true"><span>0{chapter+1}</span><span>/ 03</span></div>
-      <div className="scene-caption"><div key={chapter} className="chapter-reveal"><h1>{data.caption}</h1><p>{data.detail}</p></div><button className="chapter-action" onClick={action}>{data.action}<ArrowUpRight size={16}/></button></div>
-      <div className="scene-tools"><button aria-label={free?'Return to scroll journey':'Explore freely'} aria-pressed={free} onClick={()=>setFree(!free)}><Expand size={16}/><span>{free?'SCROLL MODE':'FREE EXPLORE'}</span></button><button aria-label={paused?'Resume ambient motion':'Pause ambient motion'} aria-pressed={paused} onClick={()=>setPaused(!paused)}>{paused?<Play size={15}/>:<Pause size={15}/>}</button><button aria-label="Reset view" onClick={()=>{setFree(false);setReset(r=>r+1)}}><RotateCcw size={15}/></button></div>
-      {free&&<div className="explore-hint">DRAG TO ORBIT · 360°<button onClick={()=>setFree(false)}>Done <Check size={13}/></button></div>}
-      {!loaded&&!failed&&<div className="loading-note" role="status"><span className="loading-ring"/> ASSEMBLING YOUR WORKSPACE</div>}
-      {failed&&<div className="loading-note load-error" role="alert" aria-label="3D loading error">The 3D workspace couldn’t load.<button onClick={()=>{setFailed(false);setLoaded(false);setReset(n=>n+1)}}>Retry <RotateCcw size={13}/></button><button onClick={()=>setDetail('projects')}>Explore work <ArrowUpRight size={13}/></button></div>}
-      <footer className="hud-footer"><div className="scroll-instruction"><span className="scroll-icon"><ArrowDown size={15}/></span><span>{chapter===2?'END OF THE JOURNEY':'SCROLL TO DISCOVER'}{chapter===2&&<small>OR THE START OF SOMETHING</small>}</span></div><nav id="chapter-controls" className="chapter-nav" aria-label="Journey chapters">{chapters.map((c,i)=><button key={c.name} aria-label={`Go to ${c.name}`} aria-current={chapter===i?'step':undefined} onClick={()=>go(i)}><span className="nav-dot"/><span className="nav-name">{c.name}</span></button>)}</nav><div className="footer-meta"><button onClick={()=>setDetail('credits')}>CREDITS <MoveUpRight size={10}/></button></div></footer>
-      <div className="journey-progress"><div ref={progressBar}/></div>
-    </main>
-    <Dialog open={menu} onOpenChange={setMenu}><DialogContent className="index-modal"><DialogTitle className="index-title">Choose your destination.</DialogTitle><DialogDescription className="index-description">Three perspectives. One workspace.</DialogDescription><nav aria-label="Chapter index">{chapters.map((c,i)=><button key={c.name} onClick={()=>go(i)}><span>0{i+1}</span><strong>{c.name}</strong><ArrowUpRight/></button>)}</nav><div className="index-footer"><span>Ahmad Rizqy Yourin</span><div><button onClick={()=>{setMenu(false);setDetail('credits')}}>CREDITS ↗</button><a href="mailto:rizqyyourin6@gmail.com">LET’S TALK ↗</a></div></div></DialogContent></Dialog>
-    <Dialog open={detail!==null} onOpenChange={open=>{if(!open)setDetail(null)}}><DialogContent className="detail-modal"><DetailContent detail={detail} setDetail={setDetail} copied={copied} copy={copy}/></DialogContent></Dialog>
-  </>;
+const RESUME_URL = '/cv/CV ATS_Ahmad Rizqy Yourin_EN.pdf';
+const GITHUB_URL = 'https://github.com/rizqyyourin';
+const INSTAGRAM_URL = 'https://www.instagram.com/rizqyyourin';
+const THREADS_URL = 'https://www.threads.net/@rizqyyourin';
+const featuredProjects = [
+  { name: 'Kohi Cafe', description: 'F&B CMS website built with Next.js', image: '/images/cafe.png', url: 'https://cafe.yourin.my.id', className: 'project-cafe', detail: 'A cafe website with a content management system, built with Next.js.' },
+  { name: 'QPAY', description: 'AI-assisted POS website, built with Laravel', image: '/images/qpay.png', url: 'https://qpay.yourin.my.id', className: 'project-qpay', detail: 'An AI-assisted point-of-sale website built with Laravel.' },
+  { name: 'Ticketin', description: 'Customer experience inspired by my latest work', image: '/images/ticketin.png', url: 'https://ticketin.yourin.my.id', className: 'project-ticket', detail: 'A customer experience project inspired by my latest work.' },
+];
+type TechIcon = ComponentType<{ size?: number; color?: string }>;
+const techIcons: Record<string, TechIcon> = { HTML5: SiHtml5, CSS3: SiCss, JavaScript: SiJavascript, TypeScript: SiTypescript, 'React.js': SiReact, 'Vue.js': SiVuedotjs, 'Next.js': SiNextdotjs, 'Nuxt.js': SiNuxt, PHP: SiPhp, Go: SiGo, Laravel: SiLaravel, 'CodeIgniter 3': SiCodeigniter, 'Node.js': SiNodedotjs, MySQL: SiMysql, PostgreSQL: SiPostgresql, Redis: SiRedis, Docker: SiDocker, Kubernetes: SiKubernetes, ESLint: SiEslint, Postman: SiPostman, 'REST API': SiSwagger, WebSocket: SiSocket, Git: SiGit, 'CI/CD': SiGithubactions, Mockoon: SiSwagger, 'VS Code': SiGithubcopilot, Cursor: SiCursor, Opencode: SiOpencode };
+const stackGroups = [
+  { title: 'Frontend', icon: Code, items: ['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React.js', 'Vue.js', 'Next.js', 'Nuxt.js'] },
+  { title: 'Backend', icon: Stack, items: ['PHP', 'Go', 'Laravel', 'CodeIgniter 3', 'Node.js', 'REST API', 'WebSocket'] },
+  { title: 'Database', icon: Database, items: ['MySQL', 'PostgreSQL', 'Redis'] },
+  { title: 'Tools & deployment', icon: Wrench, items: skills[3].items },
+];
+/*
+function Github({ size = 17 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-2.08c-3.12.68-3.78-1.33-3.78-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 .1.77 2.16 3.27 1.55.1-.73.39-1.23.71-1.51-2.49-.28-5.1-1.24-5.1-5.54 0-1.22.44-2.22 1.15-3-.12-.29-.5-1.42.11-2.96 0 0 .94-.3 3.08 1.15a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.54.23 2.67.11 2.96.72.78 1.15 1.78 1.15 3 0 4.31-2.62 5.25-5.12 5.53.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z" /></svg>;
+}
+function Linkedin({ size = 17 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 2H3.55C2.69 2 2 2.68 2 3.52v16.96c0 .84.69 1.52 1.55 1.52h16.9c.86 0 1.55-.68 1.55-1.52V3.52c0-.84-.69-1.52-1.55-1.52ZM7.93 18.75H4.98V9.2h2.95v9.55ZM6.46 7.9a1.71 1.71 0 1 1 0-3.42 1.71 1.71 0 0 1 0 3.42Zm12.29 10.85H15.8V14.1c0-1.11-.02-2.54-1.55-2.54-1.55 0-1.79 1.21-1.79 2.46v4.73H9.51V9.2h2.83v1.3h.04c.39-.75 1.36-1.55 2.79-1.55 2.99 0 3.55 1.97 3.55 4.53v5.27Z" /></svg>;
+}
+}
+*/
+function subscribeTheme(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener('portfolio-theme', callback);
+  return () => { window.removeEventListener('storage', callback); window.removeEventListener('portfolio-theme', callback); };
+}
+function readTheme() {
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
-function DetailContent({detail,setDetail,copied,copy}:{detail:JourneyDetail;setDetail:(d:JourneyDetail)=>void;copied:boolean;copy:()=>void}){
-  if(detail?.startsWith('project-')){const index=Number(detail.split('-')[1]);const p=projects[index];return <><button className="back-link" onClick={()=>setDetail('projects')}><ArrowLeft size={13}/> All projects</button><span className="detail-eyebrow">{p.category} / {p.year}</span><DialogTitle className="detail-title">{p.name}</DialogTitle><DialogDescription className="detail-description">{p.details}</DialogDescription><div className="tags">{p.tags.map(t=><span key={t}>{t}</span>)}</div><a className="detail-link" href="mailto:rizqyyourin6@gmail.com">Discuss this project <ArrowUpRight size={16}/></a></>}
-  if(detail==='projects')return <><span className="detail-eyebrow">01 / SELECTED WORK</span><DialogTitle className="detail-title">Ideas, made real.</DialogTitle><DialogDescription className="detail-description">Select a project to explore the problem and my contribution.</DialogDescription><div className="project-index">{projects.map((p,i)=><button key={p.id} onClick={()=>setDetail(`project-${i}`)}><span>{p.id}</span><div><h3>{p.name}</h3><small>{p.category} / {p.year}</small></div><ArrowUpRight size={19}/></button>)}</div></>;
-  if(detail==='skills')return <><span className="detail-eyebrow">02 / UNDER THE HOOD</span><DialogTitle className="detail-title">Across the stack.</DialogTitle><DialogDescription className="detail-description">The tools I use to connect a thoughtful interface with the systems behind it.</DialogDescription>{skills.map(s=><div className="skill-detail" key={s.title}><h3>{s.title}</h3><div className="tags">{s.items.map(t=><span key={t}>{t}</span>)}</div></div>)}<p className="soft-skills-detail">Technologically adaptive · Teamwork & collaboration · Effective communication · Critical thinking & problem solving</p></>;
-  if(detail==='journey')return <><span className="detail-eyebrow">03 / ALWAYS BECOMING</span><DialogTitle className="detail-title">Learning by doing.</DialogTitle><DialogDescription className="detail-description">Ahmad Rizqy Yourin, Computer Engineering graduate and fullstack developer based in North Jakarta.</DialogDescription><div className="journey-detail"><article><span>DEC 2025 TO JUN 2026</span><h3>PT. Solusi Tiga Selaras · Solutif</h3><h4>Fullstack Developer Intern / MagangHub Batch 3</h4><p>Schema-based multi-tenant isolation, cross-tenant materialized views, an automated SLA engine, and real-time ticket escalation. Ticket handling, email threads, WebSocket presence, CSAT reporting with sentiment analysis, Vue Query optimistic updates, and OpenAPI / AsyncAPI documentation with Mockoon.</p></article><article><span>JAN TO FEB 2024</span><h3>PT. Bintang Pelajar</h3><h4>Fullstack Developer Intern</h4><p>Helped develop student event attendance for SIMTEG using CodeIgniter 3.</p></article><article><span>2021 TO 2025</span><h3>Diponegoro University</h3><h4>Bachelor of Computer Engineering · GPA 3.64 / 4.00</h4><p>Undergraduate thesis: Smart Bin using MobileNetV2 transfer learning to classify bottles, cans, paper, and other inorganic waste.</p></article></div><details className="certificates"><summary>Certifications <span>{certifications.length} credentials +</span></summary>{certifications.map(([name,issuer,year])=><div key={name}><h4>{name}</h4><span>{issuer} / {year}</span></div>)}</details></>;
-  if(detail==='contact')return <><span className="detail-eyebrow">04 / LET’S MAKE SOMETHING</span><DialogTitle className="detail-title">Your idea.<br/>Our next chapter.</DialogTitle><DialogDescription className="detail-description">Open to fullstack roles, interesting projects, and a good conversation.</DialogDescription><a className="contact-email" href="mailto:rizqyyourin6@gmail.com">rizqyyourin6@gmail.com <ArrowUpRight size={20}/></a><Button variant="outline" size="sm" onClick={copy}>{copied?<Check/>:<Copy/>}{copied?'Copied!':'Copy email'}</Button><div role="status" className="sr-only">{copied?'Email copied to clipboard':''}</div><div className="contact-links"><a href="https://www.linkedin.com/in/rizqyyourin" target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15}/></a><a href="tel:+6285774414941">+62 857 7441 4941 <ArrowUpRight size={15}/></a></div><p className="contact-location">Tugu Utara, Koja, North Jakarta · Indonesia</p></>;
-  return <><span className="detail-eyebrow">THE PEOPLE & TOOLS BEHIND THE EXPERIENCE</span><DialogTitle className="detail-title">Made with curiosity.</DialogTitle><DialogDescription className="detail-description">Portfolio of Ahmad Rizqy Yourin. Built with Next.js, React Three Fiber, Three.js, Tailwind, shadcn/Radix, Motion, and Lucide.</DialogDescription><p className="credit-text">3D <a href="https://sketchfab.com/3d-models/macbook-289c013e6c0541f498d4c6b40045db88" target="_blank" rel="noreferrer">MacBook</a> by <a href="https://sketchfab.com/imamulhasan" target="_blank" rel="noreferrer">M I H</a>, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>. Adaptations: scale, screen overlay, lighting, motion, and scene composition.</p><p className="credit-text">Project visuals are illustrative representations. No unprovided project or certificate links are invented.</p></>;
+export default function Home() {
+  const theme = useSyncExternalStore(subscribeTheme, readTheme, () => 'light');
+
+  useEffect(() => {
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('portfolio-theme') === 'dark' ? 'dark' : 'light';
+      window.dispatchEvent(new Event('portfolio-theme'));
+    } catch { /* The page still supports theme changes when storage is unavailable. */ }
+  }, []);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.threads.com/embed.js';
+    document.body.appendChild(script);
+    return () => script.remove();
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('portfolio-theme', next); } catch { /* Persistence is optional. */ }
+    window.dispatchEvent(new Event('portfolio-theme'));
+  }
+
+  return <>
+    <a className="skip-link" href="#about">Skip to content</a>
+    <div className="portfolio-window">
+      <header className="site-header">
+        <a className="traffic-lights" href="#about" aria-label="Back to introduction"><span /><span /><span /></a>
+        <nav aria-label="Main navigation">
+          <a href="#about">About</a><a href="#projects">Projects</a><a href={RESUME_URL} target="_blank" rel="noreferrer">My CV</a><a href="mailto:rizqyyourin6@gmail.com">Contact</a>
+        </nav>
+        <button className="theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}>{theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}</button>
+      </header>
+
+      <main>
+        <section className="hero" id="about" aria-labelledby="intro-title" tabIndex={-1}>
+          <div className="hero-copy">
+            <h1 id="intro-title">Ahmad Rizqy Yourin</h1>
+            <p>Computer Engineering graduate from Diponegoro University with experience in fullstack development websites.</p>
+            <p>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="mailto:rizqyyourin6@gmail.com"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
+              <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
+            </div>
+          </div>
+          <div className="profile-photo-frame"><Image className="profile-photo" src="/images/profile.png" alt="Ahmad Rizqy Yourin" width={1374} height={1145} priority /></div>
+        </section>
+
+        <section className="projects-section" id="projects" aria-labelledby="projects-title">
+          <h2 id="projects-title">Built Projects</h2>
+          <div className="project-grid">
+            {featuredProjects.map(item => <a className="project-card" key={item.name} href={item.url} target="_blank" rel="noreferrer" aria-label={`Visit ${item.name}`}>
+              <span className={`project-cover ${item.className}`}><Image className="project-image" src={item.image} alt={`${item.name} project preview`} fill sizes="(max-width: 640px) 100vw, 33vw" /><ArrowUpRight className="project-arrow" size={20} /></span>
+              <span className="project-name">{item.name}</span><span className="project-description">{item.description}</span>
+            </a>)}
+          </div>
+        </section>
+
+        <section className="threads-section" aria-labelledby="threads-title">
+          <div className="section-heading"><h2 id="threads-title">See me on threads</h2><a className="quiet-link" href={THREADS_URL} target="_blank" rel="noreferrer">More threads <ArrowRight size={15} /></a></div>
+          <div className="threads-grid">
+            <blockquote className="text-post-media thread-embed" data-text-post-permalink="https://www.threads.com/@rizqyyourin/post/DdMA4ZCkx53" data-text-post-version="0">
+              <a href="https://www.threads.com/@rizqyyourin/post/DdMA4ZCkx53" target="_blank" rel="noreferrer">View on Threads</a>
+            </blockquote>
+            <blockquote className="text-post-media thread-embed" data-text-post-permalink="https://www.threads.com/@rizqyyourin/post/DdAoaSTHR0r" data-text-post-version="0">
+              <a href="https://www.threads.com/@rizqyyourin/post/DdAoaSTHR0r" target="_blank" rel="noreferrer">View on Threads</a>
+            </blockquote>
+            <blockquote className="text-post-media thread-embed" data-text-post-permalink="https://www.threads.com/@rizqyyourin/post/DcVVIGpE8QE" data-text-post-version="0">
+              <a href="https://www.threads.com/@rizqyyourin/post/DcVVIGpE8QE" target="_blank" rel="noreferrer">View on Threads</a>
+            </blockquote>
+          </div>
+        </section>
+
+        <section className="stack-section" aria-labelledby="stack-title">
+          <div className="stack-heading"><h2 id="stack-title">Tech Stack</h2><p>Tech stack I&apos;ve experienced and been using with</p></div>
+          <div className="stack-panel">{stackGroups.map(({ title, icon: Icon, items }) => <article className="stack-group" key={title}><div className="stack-group-heading"><span className="stack-group-icon"><Icon size={18} weight="regular" /></span><div><h3>{title}</h3><p>{items.length} technologies</p></div></div><ul>{items.map(name => { const TechIcon = techIcons[name]; return <li key={name}><span className="tech-mark" aria-hidden="true">{TechIcon ? <TechIcon size={15} /> : name.slice(0, 2)}</span><span>{name}</span></li>; })}</ul></article>)}</div>
+        </section>
+      </main>
+
+      <footer className="site-footer"><p>© {new Date().getFullYear()} Ahmad Rizqy Yourin.</p><div className="footer-links"><a href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="GitHub profile"><GithubLogoIcon size={20} /></a><a href="mailto:rizqyyourin6@gmail.com" aria-label="Email Ahmad"><EnvelopeSimpleIcon size={20} /></a><a href="https://www.linkedin.com/in/rizqyyourin" target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><LinkedinLogoIcon size={20} /></a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram profile"><InstagramLogoIcon size={20} /></a><a href={THREADS_URL} target="_blank" rel="noreferrer" aria-label="Threads profile"><ThreadsLogoIcon size={20} /></a></div></footer>
+    </div>
+
+  </>;
 }
