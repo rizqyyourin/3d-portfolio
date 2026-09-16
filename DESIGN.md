@@ -10,6 +10,6 @@ Direction comes from the user's supplied portfolio reference on September 16, 20
 - Whitespace: generous separation between sections, especially before the tech stack, follows the reference's reading rhythm.
 - Shape: rounded outer frame and hero, smaller radii on content previews, pill-shaped hero actions. Shadow only separates the outer frame and primary action from their surfaces.
 - Icons: small send, document, theme and social symbols clarify actions. Traffic lights reproduce the user's explicit macOS reference, as a single home link rather than fake window controls.
-- Motion: only user-driven model rotation, hover feedback, and smooth anchor scrolling. The 3D canvas renders on demand; reduced-motion disables transitions and smooth scrolling.
+- Motion: slow, staggered hero entrance; one-time project and tech-stack reveals on scroll; a smooth mobile-menu transition; restrained hover feedback; and smooth anchor scrolling.
 - Content: supplied name, introduction, profile photo, project names and descriptions. Existing verified skills and contact destinations are retained. Screenshots, project URLs, and Threads posts remain clearly labeled placeholders until supplied.
 - Dials: ENERGY 1 / RHYTHM 2 / MOTION 1.
