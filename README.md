@@ -1,6 +1,6 @@
-# Yourin — Beyond the Screen
+# Ahmad Rizqy Yourin — Portfolio
 
-An immersive, full-viewport 3D portfolio for Ahmad Rizqy Yourin. Scrolling moves a persistent camera through three chapters; the MacBook turns through multiple revolutions and is surrounded by interactive project surfaces and a toolkit orbit. Detailed CV content opens only on request.
+Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, and a grouped tech stack.
 
 ## Run
 
@@ -18,31 +18,43 @@ bunx playwright install chromium
 bun run test
 ```
 
-## Interactions
+## Sections
 
-- Scroll or swipe vertically to travel through Enter, Work, and Stack.
-- Chapter navigation, the Index menu, arrow keys, Page Up/Down, Home, and End provide direct navigation.
-- Free Explore enables 360-degree manual orbit. Return to Scroll Mode to restore the camera choreography.
-- Click a project surface, floating label, skill node, or career milestone to open details.
-- Pause stops ambient motion. Reduced-motion users get immediate navigation and camera placement without float or continuous rotation.
-- Keyboard-accessible chapter actions expose the same information as the 3D objects.
-- The model load failure state offers retry and direct content access.
+- **Introduction** (`#about`) — name, a two-paragraph summary, actions to start an email or open the CV, and the profile photo.
+- **Built Projects** (`#projects`) — Kohi Cafe, QPAY, and Ticketin. Each card links to its live site.
+- **Threads** — three posts rendered through the Threads embed script.
+- **Tech Stack** — frontend, backend, database, and tools & deployment groups, each with a mark per technology.
+- **Footer** — GitHub, email, LinkedIn, Instagram, Threads, and the current year.
 
-## Stack & files
+## Behaviour
 
-Next.js App Router, TypeScript, Tailwind CSS, shadcn/Radix components, Lucide, Motion, Three.js, React Three Fiber, and Drei. No external font or model requests are needed at runtime for the 3D scene.
+- The theme toggle in the header switches light and dark, stores the choice under `portfolio-theme`, and animates the change with a circular view transition where the browser supports it.
+- Mobile navigation opens from the header, closes on Escape, and returns focus to the toggle button.
+- Hero elements enter on load; each section reveals once on scroll. Project cards and stack groups add restrained hover feedback.
+- Images show a skeleton while loading and a text fallback if they fail to load.
+- Threads embeds track their own load state and fall back to a plain "View on Threads" link.
+- A skip link jumps straight to the introduction.
 
-- `src/app/page.tsx`: journey navigation, scroll state, accessible content dialogs.
-- `src/components/macbook.tsx`: camera choreography, imported model, interactive 3D artifacts.
-- `src/lib/journey.ts`: chapter labels.
-- `src/lib/portfolio.ts`: project, skill, and certification data.
-- `src/lib/screen-texture.ts`: generated display artwork.
-- `src/app/globals.css`: full-screen composition and responsive HUD.
+## Stack
 
-## Model attribution
+Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives.
 
-[MacBook](https://sketchfab.com/3d-models/macbook-289c013e6c0541f498d4c6b40045db88) by [M I H](https://sketchfab.com/imamulhasan), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The owner-supplied `macbook/source/ASSET.glb` is preserved in the source folder. Its web version at `public/models/macbook.glb` is 7.5 MB, with unchanged geometry and embedded textures resized to 2048px. Regenerate it with `node scripts/prepare-model.mjs`. Scene adaptations: scale, placement, custom screen overlay, lighting, and motion. Attribution is available through Credits and `public/models/LICENSE.md`.
+At runtime the page loads the Satoshi webfont from Fontshare and the Threads embed script from `threads.com`. No other requests are made.
 
-Project artwork is illustrative. No project/certificate URLs or downloadable CV were provided, so none are invented.
+## Files
 
-Visual direction references: [United Carriers](https://unitedcarriers.com) and [NexStudio](https://nexstudio.tech). The portfolio uses original UI, scene choreography, and artwork; no assets from those sites are copied.
+- `src/app/page.tsx`: page composition, reveal animations, and the project, Threads, and tech stack sections.
+- `src/app/layout.tsx`: metadata and the Fontshare stylesheet link.
+- `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles.
+- `src/components/ui/animated-theme-toggler.tsx`: theme toggle.
+- `src/components/ui/button.tsx`, `dialog.tsx`: shadcn/Radix primitives kept for reuse; nothing imports them yet.
+- `src/lib/portfolio.ts`: project, skill, and certification data. The page renders the skill groups.
+- `src/lib/utils.ts`: class name helper.
+- `tests/portfolio.spec.ts`: Playwright coverage for layout, content, and reveals.
+- `public/images`: profile photo and project covers. `public/cv`: the CV PDF linked from the header and hero.
+
+## Content
+
+The name, introduction, profile photo, project covers and links, and the CV PDF come from the owner's material. `src/lib/portfolio.ts` still holds longer project write-ups and the certification list, which the current design does not render.
+
+Visual direction follows the owner-supplied reference recorded in `DESIGN.md`: a quiet, spacious personal portfolio in a rounded macOS-inspired frame.
