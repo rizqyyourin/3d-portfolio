@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ComponentType } from 'react';
 import Image, { type ImageProps } from 'next/image';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
+import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, PaperPlaneTilt, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
 import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
 import { skills } from '@/lib/portfolio';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
@@ -153,7 +153,7 @@ export default function Home() {
             <motion.p {...reveal(0.32)}>Computer Engineering graduate from Diponegoro University with experience in fullstack development websites.</motion.p>
             <motion.p {...reveal(0.52)}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</motion.p>
             <motion.div className="hero-actions" {...reveal(0.72)}>
-              <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><LinkedinLogoIcon size={18} />Let&apos;s connect</a>
+              <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
               <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
             </motion.div>
           </div>
