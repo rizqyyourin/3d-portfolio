@@ -5,5 +5,9 @@
   "assets": {
     "directory": "./out",
     "not_found_handling": "404-page"
-  }
+  },
+  "routes": [
+    { "pattern": "yourin.my.id", "custom_domain": true },
+    { "pattern": "www.yourin.my.id", "custom_domain": true }
+  ]
 }
