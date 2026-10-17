@@ -39,16 +39,22 @@ Worker name in the Cloudflare dashboard must stay `web-portfolio` to match `wran
 
 ### Domain
 
-`yourin.my.id` and `www.yourin.my.id` are Worker **custom domains**; Cloudflare manages the DNS records for them. Keep the following outside this project:
+`yourin.my.id` and `www.yourin.my.id` are Worker **custom domains**, declared in the `routes` array of `wrangler.jsonc`. Cloudflare creates and owns the matching DNS records, so those hostnames must not have hand-made A or CNAME records; an existing record makes the deploy fail with `already has externally managed DNS records`.
+
+`routes` is authoritative: a deploy removes custom domains that are not listed, which is how a temporary staging hostname gets cleaned up. Add a hostname to `routes` to keep it.
+
+A zone-level Single Redirect Rule sends `www` to the apex with a 301 while preserving the path and query string. `www` stays attached to the Worker as well, so the site still loads if that rule is ever removed.
+
+Keep the following outside this project:
 
 - `cafe`, `qpay`, and `ticketin` records, which still point at the VPS.
 - The `google-site-verification` TXT records.
 
-Rolling back means removing the custom domains and pointing the A records at the origin again.
+Rolling back means deleting both custom domains and adding `A` records for `yourin.my.id` and `www.yourin.my.id` pointing back at the origin.
 
 ## Sections
 
-- **Introduction** (`#about`) — name, a two-paragraph summary, actions to start an email or open the CV, and the profile photo.
+- **Introduction** (`#about`) — name, a two-paragraph summary, actions to open the LinkedIn profile or the CV, and the profile photo.
 - **Built Projects** (`#projects`) — Kohi Cafe, QPAY, and Ticketin. Each card links to its live site.
 - **Threads** — three posts rendered through the Threads embed script.
 - **Tech Stack** — frontend, backend, database, and tools & deployment groups, each with a mark per technology.
@@ -67,14 +73,14 @@ Rolling back means removing the custom domains and pointing the A records at the
 
 Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives. Deployed with Wrangler to Cloudflare Workers.
 
-At runtime the page loads the Satoshi webfont from Fontshare and the Threads embed script from `threads.com`. No other requests are made.
+At runtime the page loads the Satoshi webfont from Fontshare, the Threads embed script from `threads.com`, and the Cloudflare Web Analytics beacon from `static.cloudflareinsights.com`. No other requests are made.
 
 ## Files
 
 - `next.config.ts`: static export (`output: 'export'`) and `images.unoptimized`, because a static export has no image optimizer.
 - `wrangler.jsonc`: Worker name and the `out/` assets directory, with `404-page` not-found handling.
 - `src/app/page.tsx`: page composition, reveal animations, and the project, Threads, and tech stack sections.
-- `src/app/layout.tsx`: metadata, the canonical URL, and the Fontshare stylesheet link.
+- `src/app/layout.tsx`: metadata, the canonical URL, the Fontshare stylesheet link, and the Web Analytics beacon.
 - `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`.
 - `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles.
 - `src/components/ui/animated-theme-toggler.tsx`: theme toggle.
