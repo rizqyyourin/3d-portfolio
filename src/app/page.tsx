@@ -11,12 +11,13 @@ import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 
 const RESUME_URL = '/cv/CV ATS_Ahmad Rizqy Yourin_EN.pdf';
 const GITHUB_URL = 'https://github.com/rizqyyourin';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/rizqyyourin';
 const INSTAGRAM_URL = 'https://www.instagram.com/rizqyyourin';
 const THREADS_URL = 'https://www.threads.net/@rizqyyourin';
 const featuredProjects = [
-  { name: 'Kohi Cafe', description: 'F&B CMS website built with Next.js', image: '/images/cafe.png', url: 'https://cafe.yourin.my.id', className: 'project-cafe', detail: 'A cafe website with a content management system, built with Next.js.' },
-  { name: 'QPAY', description: 'AI-assisted POS website, built with Laravel', image: '/images/qpay.png', url: 'https://qpay.yourin.my.id', className: 'project-qpay', detail: 'An AI-assisted point-of-sale website built with Laravel.' },
-  { name: 'Ticketin', description: 'Customer experience inspired by my latest work', image: '/images/ticketin.png', url: 'https://ticketin.yourin.my.id', className: 'project-ticket', detail: 'A customer experience project inspired by my latest work.' },
+  { name: 'Kohi Cafe', description: 'F&B CMS website built with Next.js', image: '/images/cafe.webp', url: 'https://cafe.yourin.my.id', className: 'project-cafe', detail: 'A cafe website with a content management system, built with Next.js.' },
+  { name: 'QPAY', description: 'AI-assisted POS website, built with Laravel', image: '/images/qpay.webp', url: 'https://qpay.yourin.my.id', className: 'project-qpay', detail: 'An AI-assisted point-of-sale website built with Laravel.' },
+  { name: 'Ticketin', description: 'Customer experience inspired by my latest work', image: '/images/ticketin.webp', url: 'https://ticketin.yourin.my.id', className: 'project-ticket', detail: 'A customer experience project inspired by my latest work.' },
 ];
 type TechIcon = ComponentType<{ size?: number; color?: string }>;
 const techIcons: Record<string, TechIcon> = { HTML5: SiHtml5, CSS3: SiCss, JavaScript: SiJavascript, TypeScript: SiTypescript, 'React.js': SiReact, 'Vue.js': SiVuedotjs, 'Next.js': SiNextdotjs, 'Nuxt.js': SiNuxt, PHP: SiPhp, Go: SiGo, Laravel: SiLaravel, 'CodeIgniter 3': SiCodeigniter, 'Node.js': SiNodedotjs, MySQL: SiMysql, PostgreSQL: SiPostgresql, Redis: SiRedis, Docker: SiDocker, Kubernetes: SiKubernetes, ESLint: SiEslint, Postman: SiPostman, 'REST API': SiSwagger, WebSocket: SiSocket, Git: SiGit, 'CI/CD': SiGithubactions, Mockoon: SiSwagger, 'VS Code': SiGithubcopilot, Cursor: SiCursor, Opencode: SiOpencode };
@@ -152,11 +153,11 @@ export default function Home() {
             <motion.p {...reveal(0.32)}>Computer Engineering graduate from Diponegoro University with experience in fullstack development websites.</motion.p>
             <motion.p {...reveal(0.52)}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</motion.p>
             <motion.div className="hero-actions" {...reveal(0.72)}>
-              <a className="button button-primary" href="mailto:rizqyyourin6@gmail.com"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
+              <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
               <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
             </motion.div>
           </div>
-          <motion.div className="profile-photo-frame" {...reveal(0.24)}><SkeletonImage className="profile-photo" src="/images/profile.png" alt="Ahmad Rizqy Yourin" width={1374} height={1145} priority fallbackLabel="Photo unavailable" /></motion.div>
+          <motion.div className="profile-photo-frame" {...reveal(0.24)}><SkeletonImage className="profile-photo" src="/images/profile.webp" alt="Ahmad Rizqy Yourin" width={1100} height={917} priority fallbackLabel="Photo unavailable" /></motion.div>
         </section>
 
         <section className="projects-section" id="projects" aria-labelledby="projects-title">
@@ -182,7 +183,8 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="site-footer"><p>© {new Date().getFullYear()} Ahmad Rizqy Yourin.</p><div className="footer-links"><a href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="GitHub profile"><GithubLogoIcon size={20} /></a><a href="mailto:rizqyyourin6@gmail.com" aria-label="Email Ahmad"><EnvelopeSimpleIcon size={20} /></a><a href="https://www.linkedin.com/in/rizqyyourin" target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><LinkedinLogoIcon size={20} /></a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram profile"><InstagramLogoIcon size={20} /></a><a href={THREADS_URL} target="_blank" rel="noreferrer" aria-label="Threads profile"><ThreadsLogoIcon size={20} /></a></div></footer>
+      {/* The static export bakes this year into the HTML, so it refreshes on each deploy. */}
+      <footer className="site-footer"><p>© {new Date().getFullYear()} Ahmad Rizqy Yourin.</p><div className="footer-links"><a href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="GitHub profile"><GithubLogoIcon size={20} /></a><a href="mailto:rizqyyourin6@gmail.com" aria-label="Email Ahmad"><EnvelopeSimpleIcon size={20} /></a><a href={LINKEDIN_URL} target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><LinkedinLogoIcon size={20} /></a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram profile"><InstagramLogoIcon size={20} /></a><a href={THREADS_URL} target="_blank" rel="noreferrer" aria-label="Threads profile"><ThreadsLogoIcon size={20} /></a></div></footer>
     </div>
 
   </>;

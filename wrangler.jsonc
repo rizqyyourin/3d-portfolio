@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "web-portfolio",
+  "compatibility_date": "2026-10-17",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "yourin.my.id", "custom_domain": true },
+    { "pattern": "www.yourin.my.id", "custom_domain": true }
+  ]
+}
