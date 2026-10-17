@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import type { ComponentType } from 'react';
 import Image, { type ImageProps } from 'next/image';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, PaperPlaneTilt, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
+import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
 import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
 import { skills } from '@/lib/portfolio';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 
 const RESUME_URL = '/cv/CV ATS_Ahmad Rizqy Yourin_EN.pdf';
 const GITHUB_URL = 'https://github.com/rizqyyourin';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/rizqyyourin';
 const INSTAGRAM_URL = 'https://www.instagram.com/rizqyyourin';
 const THREADS_URL = 'https://www.threads.net/@rizqyyourin';
 const featuredProjects = [
@@ -152,7 +153,7 @@ export default function Home() {
             <motion.p {...reveal(0.32)}>Computer Engineering graduate from Diponegoro University with experience in fullstack development websites.</motion.p>
             <motion.p {...reveal(0.52)}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</motion.p>
             <motion.div className="hero-actions" {...reveal(0.72)}>
-              <a className="button button-primary" href="mailto:rizqyyourin6@gmail.com"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
+              <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><LinkedinLogoIcon size={18} />Let&apos;s connect</a>
               <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
             </motion.div>
           </div>
@@ -183,7 +184,7 @@ export default function Home() {
       </main>
 
       {/* The static export bakes this year into the HTML, so it refreshes on each deploy. */}
-      <footer className="site-footer"><p>© {new Date().getFullYear()} Ahmad Rizqy Yourin.</p><div className="footer-links"><a href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="GitHub profile"><GithubLogoIcon size={20} /></a><a href="mailto:rizqyyourin6@gmail.com" aria-label="Email Ahmad"><EnvelopeSimpleIcon size={20} /></a><a href="https://www.linkedin.com/in/rizqyyourin" target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><LinkedinLogoIcon size={20} /></a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram profile"><InstagramLogoIcon size={20} /></a><a href={THREADS_URL} target="_blank" rel="noreferrer" aria-label="Threads profile"><ThreadsLogoIcon size={20} /></a></div></footer>
+      <footer className="site-footer"><p>© {new Date().getFullYear()} Ahmad Rizqy Yourin.</p><div className="footer-links"><a href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="GitHub profile"><GithubLogoIcon size={20} /></a><a href="mailto:rizqyyourin6@gmail.com" aria-label="Email Ahmad"><EnvelopeSimpleIcon size={20} /></a><a href={LINKEDIN_URL} target="_blank" rel="noreferrer" aria-label="LinkedIn profile"><LinkedinLogoIcon size={20} /></a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram profile"><InstagramLogoIcon size={20} /></a><a href={THREADS_URL} target="_blank" rel="noreferrer" aria-label="Threads profile"><ThreadsLogoIcon size={20} /></a></div></footer>
     </div>
 
   </>;
