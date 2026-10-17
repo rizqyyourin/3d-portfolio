@@ -7,6 +7,16 @@ test('theme-matched favicon is served from the app icon route', async ({ page })
   expect(await response.text()).toContain('Rizqy');
 });
 
+test('robots.txt and sitemap.xml are served for crawlers', async ({ page }) => {
+  const robots = await page.request.get('/robots.txt');
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toContain('Sitemap: https://yourin.my.id/sitemap.xml');
+
+  const sitemap = await page.request.get('/sitemap.xml');
+  expect(sitemap.ok()).toBe(true);
+  expect(await sitemap.text()).toContain('<loc>https://yourin.my.id</loc>');
+});
+
 test('Satoshi is applied as the portfolio typeface', async ({ page }) => {
   await page.goto('/');
 
@@ -90,7 +100,7 @@ test('theme switch still works without the View Transition API', async ({ page }
 test('slow images show skeletons while project links remain usable', async ({ page }) => {
   let releaseImages: (() => void) | undefined;
   const imageGate = new Promise<void>(resolve => { releaseImages = resolve; });
-  await page.route(url => url.pathname === '/_next/image' && /profile\.png|cafe\.png/.test(url.searchParams.get('url') ?? ''), async route => {
+  await page.route(url => /\/images\/(profile|cafe)\.webp$/.test(url.pathname), async route => {
     await imageGate;
     await route.continue();
   });

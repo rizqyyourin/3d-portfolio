@@ -2,6 +2,8 @@
 
 Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, and a grouped tech stack.
 
+The site is a **Next.js static export** served as Cloudflare Workers static assets at [yourin.my.id](https://yourin.my.id).
+
 ## Run
 
 ```bash
@@ -12,11 +14,37 @@ bun dev
 Open http://localhost:3000.
 
 ```bash
-bun run build
+bun run build            # static export into out/
 bun run lint
-bunx playwright install chromium
-bun run test
+bun run test             # Playwright; needs `bunx playwright install chromium` once
+bun run preview          # serve out/ through wrangler (Workers static assets)
+bun run deploy           # build + wrangler deploy
+bun run images:optimize  # rebuild public/images/*.webp from assets/source/*.png
 ```
+
+## Deploy
+
+`next.config.ts` sets `output: 'export'`, so `next build` writes a fully static site to `out/`. `wrangler.jsonc` publishes that directory as Workers static assets — there is no Worker script, so requests never execute code. Cloudflare bills static asset requests as free and unlimited, which is why this setup does not touch the Workers free-plan request quota.
+
+Production deploys run through **Workers Builds**, connected to this repository:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `bun run build` |
+| Deploy command | `npx wrangler deploy` |
+| Root directory | *(empty)* |
+
+Worker name in the Cloudflare dashboard must stay `web-portfolio` to match `wrangler.jsonc`. If a build fails on the lockfile, set the build variable `BUN_VERSION=1.4.2` to match `packageManager`.
+
+### Domain
+
+`yourin.my.id` and `www.yourin.my.id` are Worker **custom domains**; Cloudflare manages the DNS records for them. Keep the following outside this project:
+
+- `cafe`, `qpay`, and `ticketin` records, which still point at the VPS.
+- The `google-site-verification` TXT records.
+
+Rolling back means removing the custom domains and pointing the A records at the origin again.
 
 ## Sections
 
@@ -37,24 +65,31 @@ bun run test
 
 ## Stack
 
-Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives.
+Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives. Deployed with Wrangler to Cloudflare Workers.
 
 At runtime the page loads the Satoshi webfont from Fontshare and the Threads embed script from `threads.com`. No other requests are made.
 
 ## Files
 
+- `next.config.ts`: static export (`output: 'export'`) and `images.unoptimized`, because a static export has no image optimizer.
+- `wrangler.jsonc`: Worker name and the `out/` assets directory, with `404-page` not-found handling.
 - `src/app/page.tsx`: page composition, reveal animations, and the project, Threads, and tech stack sections.
-- `src/app/layout.tsx`: metadata and the Fontshare stylesheet link.
+- `src/app/layout.tsx`: metadata, the canonical URL, and the Fontshare stylesheet link.
+- `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`.
 - `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles.
 - `src/components/ui/animated-theme-toggler.tsx`: theme toggle.
 - `src/components/ui/button.tsx`, `dialog.tsx`: shadcn/Radix primitives kept for reuse; nothing imports them yet.
 - `src/lib/portfolio.ts`: project, skill, and certification data. The page renders the skill groups.
 - `src/lib/utils.ts`: class name helper.
+- `scripts/optimize-images.mjs`: converts the source PNGs into the WebP files that ship.
 - `tests/portfolio.spec.ts`: Playwright coverage for layout, content, and reveals.
-- `public/images`: profile photo and project covers. `public/cv`: the CV PDF linked from the header and hero.
+- `public/images`: the WebP profile photo and project covers. `public/cv`: the CV PDF linked from the header and hero.
+- `assets/source`: the full-resolution PNG originals. They stay out of `out/`, so they are never deployed.
 
 ## Content
 
 The name, introduction, profile photo, project covers and links, and the CV PDF come from the owner's material. `src/lib/portfolio.ts` still holds longer project write-ups and the certification list, which the current design does not render.
+
+The footer year is baked into the HTML at build time, so it refreshes on the next deploy rather than in the browser.
 
 Visual direction follows the owner-supplied reference recorded in `DESIGN.md`: a quiet, spacious personal portfolio in a rounded macOS-inspired frame.
