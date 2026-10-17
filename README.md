@@ -5,17 +5,17 @@ An immersive, full-viewport 3D portfolio for Ahmad Rizqy Yourin. Scrolling moves
 ## Run
 
 ```bash
-pnpm install
-pnpm dev
+bun install
+bun dev
 ```
 
 Open http://localhost:3000.
 
 ```bash
-pnpm build
-pnpm lint
-pnpm exec playwright install chromium
-pnpm test
+bun run build
+bun run lint
+bunx playwright install chromium
+bun run test
 ```
 
 ## Interactions
