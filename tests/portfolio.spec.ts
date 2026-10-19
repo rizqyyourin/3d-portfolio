@@ -200,6 +200,33 @@ test('mobile navigation uses an accessible hamburger menu', async ({ page }) => 
   await expect(navigation).toBeVisible();
 });
 
+test('freeCodeCamp and GitHub progress panels render activity graphs', async ({ page }) => {
+  await page.goto('/');
+
+  const section = page.locator('#progress');
+  await expect(section.getByRole('heading', { name: 'Progress' })).toBeVisible();
+  await expect(section.locator('.progress-panel')).toHaveCount(2);
+
+  const freecodecamp = section.locator('.progress-panel').first();
+  await expect(freecodecamp.locator('.progress-platform')).toContainText('freeCodeCamp');
+  await expect(freecodecamp.locator('.progress-metric-value')).toHaveText(/^[\d,]+$/);
+  await expect(freecodecamp.locator('.activity-months .activity-month')).toHaveCount(53);
+  await expect(freecodecamp.locator('.activity-weeks .activity-day')).toHaveCount(371);
+  await expect(freecodecamp.getByRole('link', { name: 'View profile' })).toHaveAttribute('href', 'https://www.freecodecamp.org/yourin');
+  await expect(freecodecamp.locator('.activity-updated')).toHaveText(/^Last updated: [A-Z][a-z]{2} \d{4}$/);
+
+  const github = section.locator('.progress-panel').nth(1);
+  await expect(github.locator('.progress-platform')).toContainText('GitHub');
+  await expect(github.locator('.progress-metric-label')).toHaveText(/^contributions in \d{4}$/);
+  await expect(github.getByRole('link', { name: 'View profile' })).toHaveAttribute('href', 'https://github.com/rizqyyourin');
+
+  // Each graph reads as one labelled image instead of hundreds of individual cells.
+  for (const graph of await section.locator('.activity-graph').all()) {
+    await expect(graph).toHaveAttribute('aria-label', /active days, last updated/);
+  }
+  expect(await section.locator('.activity-weeks .activity-day:not([data-level="0"])').count()).toBeGreaterThan(0);
+});
+
 test('entrance and scroll reveals finish with readable content', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 600 });
   await page.route('**/threads.com/**', route => route.abort());

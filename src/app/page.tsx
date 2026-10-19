@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { ComponentType } from 'react';
+import type { ComponentType, CSSProperties } from 'react';
 import Image, { type ImageProps } from 'next/image';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, PaperPlaneTilt, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
-import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
+import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiFreecodecamp, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
 import { skills } from '@/lib/portfolio';
+import { freeCodeCamp } from '@/lib/freecodecamp';
+import { githubContributions } from '@/lib/github';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 
 const RESUME_URL = '/cv/CV ATS_Ahmad Rizqy Yourin_EN.pdf';
@@ -32,6 +34,110 @@ const threadPosts = [
   'https://www.threads.com/@rizqyyourin/post/DdAoaSTHR0r',
   'https://www.threads.com/@rizqyyourin/post/DcVVIGpE8QE',
 ];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DAY_MS = 86_400_000;
+const ROLLING_YEAR_DAYS = 364;
+
+const reveal = (delay = 0) => ({
+  initial: { opacity: 0, y: 26 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
+const scrollReveal = (delay = 0) => ({
+  initial: { opacity: 0, y: 28 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
+const utcDay = (day: string) => Date.parse(`${day}T00:00:00Z`);
+
+type ActivityDay = { key: string; level: number; inRange: boolean };
+type ActivityGrid = {
+  days: ActivityDay[];
+  monthSlots: { key: string; label: string }[];
+  weeks: number;
+  activeDays: number;
+};
+
+// Each sync script writes a per-day intensity: freeCodeCamp derives it from solved-challenge
+// counts, GitHub ships its own 0-4 levels. The grid only has to lay those out. The snapshot
+// is baked at build time, which keeps the server and client render identical.
+function buildActivityGrid(calendar: Record<string, number>, rangeStart: number, rangeEnd: number): ActivityGrid {
+  const start = rangeStart - new Date(rangeStart).getUTCDay() * DAY_MS;
+  const end = rangeEnd + (6 - new Date(rangeEnd).getUTCDay()) * DAY_MS;
+  const weeks = Math.round((end - start + DAY_MS) / (7 * DAY_MS));
+
+  const days: ActivityDay[] = [];
+  const monthSlots: { key: string; label: string }[] = [];
+  let activeDays = 0;
+  let previousMonth = -1;
+
+  for (let week = 0; week < weeks; week += 1) {
+    const weekStart = start + week * 7 * DAY_MS;
+    // A window can open mid-week (GitHub's year starts on the Sunday before January 1st),
+    // so the month label follows the first day that is actually in range.
+    const month = new Date(Math.max(weekStart, rangeStart)).getUTCMonth();
+    monthSlots.push({ key: `month-${week}`, label: month === previousMonth ? '' : MONTHS[month] });
+    previousMonth = month;
+
+    for (let day = 0; day < 7; day += 1) {
+      const time = weekStart + day * DAY_MS;
+      const inRange = time >= rangeStart && time <= rangeEnd;
+      const level = inRange ? calendar[new Date(time).toISOString().slice(0, 10)] ?? 0 : 0;
+      if (level > 0) activeDays += 1;
+      days.push({ key: `${week}-${day}`, level, inRange });
+    }
+  }
+
+  return { days, monthSlots, weeks, activeDays };
+}
+
+const updatedLabel = (syncedAt: string) => {
+  const date = new Date(syncedAt);
+  return `${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+};
+
+// freeCodeCamp gets a rolling year ending today; GitHub gets the calendar year, the same
+// window its own profile shows.
+const freeCodeCampActivity = buildActivityGrid(
+  freeCodeCamp.calendar,
+  utcDay(freeCodeCamp.syncedAt.slice(0, 10)) - ROLLING_YEAR_DAYS * DAY_MS,
+  utcDay(freeCodeCamp.syncedAt.slice(0, 10)),
+);
+const githubActivity = buildActivityGrid(
+  githubContributions.calendar,
+  Date.UTC(githubContributions.year, 0, 1),
+  Date.UTC(githubContributions.year, 11, 31),
+);
+
+type ProgressPanelProps = {
+  icon: ComponentType<{ size?: number; 'aria-hidden'?: 'true' }>;
+  platform: string;
+  metric: number;
+  metricLabel: string;
+  href: string;
+  activity: ActivityGrid;
+  updated: string;
+  delay: number;
+};
+
+function ProgressPanel({ icon: Icon, platform, metric, metricLabel, href, activity, updated, delay }: ProgressPanelProps) {
+  return <motion.div className="progress-panel" {...scrollReveal(delay)} style={{ '--activity-weeks': activity.weeks } as CSSProperties}>
+    <div className="progress-top">
+      <span className="progress-platform"><Icon size={18} aria-hidden="true" />{platform}</span>
+      <a className="quiet-link" href={href} target="_blank" rel="noreferrer">View profile <ArrowUpRight size={15} /></a>
+    </div>
+    <p className="progress-metric"><span className="progress-metric-value">{metric.toLocaleString('en-US')}</span><span className="progress-metric-label">{metricLabel}</span></p>
+    <div className="activity-graph" role="img" aria-label={`${platform} activity: ${activity.activeDays} active days, last updated ${updated}`}>
+      <div className="activity-months" aria-hidden="true">{activity.monthSlots.map(slot => <span className="activity-month" key={slot.key}>{slot.label}</span>)}</div>
+      <div className="activity-weeks" aria-hidden="true">{activity.days.map(day => <span className="activity-day" key={day.key} data-level={day.level} data-placeholder={day.inRange ? undefined : 'true'} />)}</div>
+    </div>
+    <div className="progress-foot">
+      <span className="activity-legend" aria-hidden="true"><span>Less</span>{[0, 1, 2, 3, 4].map(level => <span className="activity-day" key={level} data-level={level} />)}<span>More</span></span>
+      <span className="activity-updated">Last updated: {updated}</span>
+    </div>
+  </motion.div>;
+}
 
 function SkeletonImage({ fallbackLabel, className, alt, ...props }: ImageProps & { fallbackLabel: string }) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -96,17 +202,6 @@ function Linkedin({ size = 17 }: { size?: number }) {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const reveal = (delay = 0) => ({
-    initial: { opacity: 0, y: 26 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as const },
-  });
-  const scrollReveal = (delay = 0) => ({
-    initial: { opacity: 0, y: 28 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.15 },
-    transition: { duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] as const },
-  });
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -180,6 +275,14 @@ export default function Home() {
         <section className="stack-section" aria-labelledby="stack-title">
           <motion.div className="stack-heading" {...scrollReveal()}><h2 id="stack-title">Tech Stack</h2><p>Tech stack I&apos;ve experienced and been using with</p></motion.div>
           <div className="stack-panel">{stackGroups.map(({ title, icon: Icon, items }, index) => <motion.article className="stack-group" key={title} {...scrollReveal(index * 0.13)} whileHover={{ y: -4, transition: { duration: 0.36 } }}><div className="stack-group-heading"><span className="stack-group-icon"><Icon size={18} weight="regular" /></span><div><h3>{title}</h3><p>{items.length} technologies</p></div></div><ul>{items.map(name => { const TechIcon = techIcons[name]; return <li key={name}><span className="tech-mark" aria-hidden="true">{TechIcon ? <TechIcon size={15} /> : name.slice(0, 2)}</span><span>{name}</span></li>; })}</ul></motion.article>)}</div>
+        </section>
+
+        <section className="progress-section" id="progress" aria-labelledby="progress-title">
+          <motion.div className="progress-heading" {...scrollReveal()}><h2 id="progress-title">Progress</h2><p>My freeCodeCamp and GitHub activity, one day at a time</p></motion.div>
+          <div className="progress-panels">
+            <ProgressPanel icon={SiFreecodecamp} platform="freeCodeCamp" metric={freeCodeCamp.points} metricLabel="total points" href={`https://www.freecodecamp.org/${freeCodeCamp.username}`} activity={freeCodeCampActivity} updated={updatedLabel(freeCodeCamp.syncedAt)} delay={0.1} />
+            <ProgressPanel icon={GithubLogoIcon} platform="GitHub" metric={githubContributions.contributions} metricLabel={`contributions in ${githubContributions.year}`} href={`https://github.com/${githubContributions.username}`} activity={githubActivity} updated={updatedLabel(githubContributions.syncedAt)} delay={0.18} />
+          </div>
         </section>
       </main>
 
