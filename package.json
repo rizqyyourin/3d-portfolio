@@ -10,11 +10,14 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun run sync && next build",
     "start": "next start",
     "preview": "wrangler dev",
-    "deploy": "next build && wrangler deploy",
+    "deploy": "bun run build && wrangler deploy",
     "images:optimize": "node scripts/optimize-images.mjs",
+    "sync": "bun run freecodecamp:sync && bun run github:sync",
+    "freecodecamp:sync": "node scripts/fetch-freecodecamp.mjs",
+    "github:sync": "node scripts/fetch-github.mjs",
     "lint": "eslint .",
     "test": "playwright test"
   },

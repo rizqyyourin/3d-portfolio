@@ -1,6 +1,6 @@
 # Ahmad Rizqy Yourin — Portfolio
 
-Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, and a grouped tech stack.
+Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, a grouped tech stack, and freeCodeCamp and GitHub progress panels.
 
 The site is a **Next.js static export** served as Cloudflare Workers static assets at [yourin.my.id](https://yourin.my.id).
 
@@ -20,6 +20,9 @@ bun run test             # Playwright; needs `bunx playwright install chromium` 
 bun run preview          # serve out/ through wrangler (Workers static assets)
 bun run deploy           # build + wrangler deploy
 bun run images:optimize  # rebuild public/images/*.webp from assets/source/*.png
+bun run sync             # refresh both progress snapshots (freeCodeCamp and GitHub)
+bun run freecodecamp:sync # refresh only src/lib/freecodecamp.ts
+bun run github:sync      # refresh only src/lib/github.ts
 ```
 
 ## Deploy
@@ -58,6 +61,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 - **Built Projects** (`#projects`) — Kohi Cafe, QPAY, and Ticketin. Each card links to its live site.
 - **Threads** — three posts rendered through the Threads embed script.
 - **Tech Stack** — frontend, backend, database, and tools & deployment groups, each with a mark per technology.
+- **Progress** (`#progress`) — two cards. freeCodeCamp shows total points and a rolling-year activity graph; GitHub shows the year's contribution count and its calendar-year graph. Both link to the matching profile.
 - **Footer** — GitHub, email, LinkedIn, Instagram, Threads, and the current year.
 
 ## Behaviour
@@ -67,6 +71,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 - Hero elements enter on load; each section reveals once on scroll. Project cards and stack groups add restrained hover feedback.
 - Images show a skeleton while loading and a text fallback if they fail to load.
 - Threads embeds track their own load state and fall back to a plain "View on Threads" link.
+- The progress graphs shade each day by its activity intensity — freeCodeCamp derives the intensity from solved challenges, GitHub ships its own four levels. Each graph scrolls horizontally on narrow screens and shows when its snapshot was taken.
 - A skip link jumps straight to the introduction.
 
 ## Stack
@@ -88,6 +93,9 @@ At runtime the page loads the Satoshi webfont from Fontshare, the Threads embed 
 - `src/lib/portfolio.ts`: project, skill, and certification data. The page renders the skill groups.
 - `src/lib/utils.ts`: class name helper.
 - `scripts/optimize-images.mjs`: converts the source PNGs into the WebP files that ship.
+- `scripts/lib/snapshot.mjs`: shared write-and-fallback plumbing for the snapshot scripts.
+- `scripts/fetch-freecodecamp.mjs`, `scripts/fetch-github.mjs`: snapshot each profile; `bun run build` runs both before `next build`.
+- `src/lib/freecodecamp.ts`, `src/lib/github.ts`: generated progress snapshots (summary number and per-day intensity) that the Progress cards render.
 - `tests/portfolio.spec.ts`: Playwright coverage for layout, content, and reveals.
 - `public/images`: the WebP profile photo and project covers. `public/cv`: the CV PDF linked from the header and hero.
 - `assets/source`: the full-resolution PNG originals. They stay out of `out/`, so they are never deployed.
@@ -97,5 +105,7 @@ At runtime the page loads the Satoshi webfont from Fontshare, the Threads embed 
 The name, introduction, profile photo, project covers and links, and the CV PDF come from the owner's material. `src/lib/portfolio.ts` still holds longer project write-ups and the certification list, which the current design does not render.
 
 The footer year is baked into the HTML at build time, so it refreshes on the next deploy rather than in the browser.
+
+The freeCodeCamp and GitHub progress snapshots work the same way: `bun run build` runs `bun run sync` first, which writes `src/lib/freecodecamp.ts` and `src/lib/github.ts`. Neither service can be read from the browser — the freeCodeCamp API is CORS-locked to `freecodecamp.org`, and GitHub's contribution calendar needs a token through GraphQL — so the site deliberately does not run a Worker to proxy them. The numbers refresh on the next deploy.
 
 Visual direction follows the owner-supplied reference recorded in `DESIGN.md`: a quiet, spacious personal portfolio in a rounded macOS-inspired frame.
