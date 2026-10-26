@@ -12,6 +12,8 @@
   --thread-panel: #d5d5d0;
   --primary: #292a27;
   --primary-text: #ffffff;
+  --accent: #4f6b45;
+  --accent-soft: #edf2e8;
   --window-shadow: 0 30px 80px -34px #25282040, 0 8px 24px -14px #25282024;
   color-scheme: light;
 }
@@ -28,6 +30,8 @@
   --thread-panel: #343831;
   --primary: #eeeee5;
   --primary-text: #22251f;
+  --accent: #b7d0a8;
+  --accent-soft: #303b2b;
   --window-shadow: 0 30px 80px -34px #00000099, 0 8px 24px -14px #00000066;
   color-scheme: dark;
 }
@@ -101,6 +105,30 @@ h2 { font-size: 27px; font-weight: 500; letter-spacing: -.8px; line-height: 1.25
 .project-card:hover .project-arrow, .project-card:focus-visible .project-arrow { opacity: 1; transform: none; }
 .project-name { display: block; font-size: 15px; margin: 19px 4px 5px; }
 .project-description { display: block; color: var(--muted-foreground); font-size: 13px; line-height: 1.55; margin: 0 4px; }
+.services-section { margin-top: 138px; }
+.service-list { display: flex; flex-direction: column; gap: 24px; margin-top: 36px; }
+.service-card { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 36px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 28px; }
+.service-media { position: relative; align-self: center; aspect-ratio: 16 / 9; border: 1px solid color-mix(in srgb, var(--border) 55%, transparent); border-radius: 20px; background: #e9eef8; overflow: hidden; }
+.service-image { object-fit: cover; }
+.service-video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.service-play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 11px; padding: 0; border: 0; background: #10120f30; color: #ffffff; font-size: 12px; font-weight: 500; transition: background .3s; }
+.service-play-icon { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; background: #ffffffeb; color: #22251f; box-shadow: 0 12px 32px #10120f3d; transition: transform .35s cubic-bezier(.16, 1, .3, 1); }
+.service-play:hover .service-play-icon, .service-play:focus-visible .service-play-icon { transform: scale(1.08); }
+.service-play:hover, .service-play:focus-visible { background: #10120f1f; }
+.service-body { display: flex; flex-direction: column; min-width: 0; padding: 22px 28px 22px 0; }
+.service-body h3 { margin-top: 12px; font-size: clamp(22px, 2.1vw, 29px); font-weight: 500; line-height: 1.27; letter-spacing: -.8px; }
+.service-description { max-width: 48ch; margin-top: 14px; color: var(--muted-foreground); font-size: 14px; line-height: 1.65; }
+.service-features { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.service-features li { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 6px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--background); color: var(--muted-foreground); font-size: 12px; }
+.service-features svg { flex: 0 0 auto; color: var(--accent); }
+.service-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: auto; padding-top: 26px; }
+.service-price { display: flex; flex-direction: column; gap: 4px; }
+.service-price-label { color: var(--muted-foreground); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.service-price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; }
+.service-price-row s { color: var(--muted-foreground); font-size: 14px; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, var(--muted-foreground) 65%, transparent); }
+.service-price-row strong { font-size: 30px; font-weight: 500; line-height: 1.1; letter-spacing: -1.2px; font-variant-numeric: tabular-nums; }
+.service-discount { padding: 4px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 500; }
+.service-cta { flex: 0 0 auto; min-height: 48px; padding: 12px 20px; font-size: 13px; }
 .threads-section { margin-top: 132px; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .section-heading p { color: var(--muted-foreground); font-size: 14px; margin-top: 9px; }
@@ -190,8 +218,14 @@ iframe.text-post-media { display: block; width: 100% !important; min-width: 0 !i
   .hero-actions { margin-top: 40px; }
   .stack-panel { padding: 48px; gap: 30px; }
 }
+@media (min-width: 1001px) and (max-width: 1365px) {
+  .service-footer { flex-direction: column; align-items: stretch; gap: 14px; }
+  .service-cta { width: 100%; }
+}
 @media (max-width: 1000px) {
   .portfolio-window { margin: 24px; padding: 30px 36px 24px; border-radius: 34px; }
+  .service-card { grid-template-columns: 1fr; gap: 0; }
+  .service-body { padding: 26px 26px 20px; }
   .hero { gap: 34px; margin-top: 56px; }
   .hero h1 { font-size: 30px; letter-spacing: -1.2px; margin-bottom: 28px; }
   .hero-copy p { font-size: 16px; letter-spacing: -.3px; }
@@ -202,6 +236,8 @@ iframe.text-post-media { display: block; width: 100% !important; min-width: 0 !i
   h2 { font-size: 23px; }
   .project-grid, .threads-grid { gap: 22px; margin-top: 28px; }
   .projects-section { margin-top: 94px; }
+  .services-section { margin-top: 94px; }
+  .service-list { margin-top: 28px; }
   .threads-section { margin-top: 94px; }
   .stack-section { margin-top: 120px; }
   .stack-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -236,6 +272,18 @@ iframe.text-post-media { display: block; width: 100% !important; min-width: 0 !i
   .project-cover { aspect-ratio: 1.83; }
   .project-name { font-size: 16px; margin-top: 16px; }
   .project-description { font-size: 13px; }
+  .services-section { margin-top: 64px; }
+  .service-list { margin-top: 28px; gap: 18px; }
+  .service-card { padding: 10px; border-radius: 24px; }
+  .service-media { border-radius: 16px; }
+  .service-body { padding: 20px 12px 12px; }
+  .service-body h3 { font-size: 22px; letter-spacing: -.6px; }
+  .service-description { margin-top: 12px; font-size: 13px; }
+  .service-features { gap: 6px; margin-top: 16px; }
+  .service-features li { min-height: 28px; padding: 5px 9px; font-size: 11px; }
+  .service-footer { flex-direction: column; align-items: stretch; gap: 14px; padding-top: 20px; }
+  .service-price-row strong { font-size: 28px; }
+  .service-cta { width: 100%; }
   .section-heading { align-items: flex-start; gap: 12px; flex-wrap: wrap; }
   .coming-soon { font-size: 12px; padding-top: 7px; }
   .threads-grid { gap: 12px; grid-template-columns: 1fr; min-width: 0; overflow: hidden; }

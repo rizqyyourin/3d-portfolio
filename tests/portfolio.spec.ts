@@ -200,8 +200,21 @@ test('mobile navigation uses an accessible hamburger menu', async ({ page }) => 
   await expect(navigation).toBeVisible();
 });
 
-test('freeCodeCamp and GitHub progress panels render activity graphs', async ({ page }) => {
+test('freelance service card links to Fastwork with the promotional price', async ({ page }) => {
   await page.goto('/');
+
+  const section = page.locator('#services');
+  await expect(section.getByRole('heading', { name: 'Freelance Services' })).toBeVisible();
+  await expect(section.getByRole('heading', { name: 'AI Chatbot for Your Business Website' })).toBeVisible();
+  await expect(section.getByRole('link', { name: 'Order on Fastwork' })).toHaveAttribute('href', 'https://fastwork.id/user/yourin/chatbot-30934056');
+  await expect(section.getByRole('link', { name: 'Order on Fastwork' })).toHaveAttribute('target', '_blank');
+  await expect(section.locator('.service-price-row s')).toHaveText('Rp899.000');
+  await expect(section.locator('.service-price-row strong')).toHaveText('Rp850.000');
+  await expect(section.getByRole('button', { name: 'Play the AI chatbot demo video' })).toBeVisible();
+  await expect(page.getByRole('navigation').getByRole('link', { name: 'Services', exact: true })).toHaveAttribute('href', '#services');
+});
+
+test('freeCodeCamp and GitHub progress panels render activity graphs', async ({ page }) => {  await page.goto('/');
 
   const section = page.locator('#progress');
   await expect(section.getByRole('heading', { name: 'Progress' })).toBeVisible();

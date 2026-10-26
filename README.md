@@ -1,6 +1,6 @@
 # Ahmad Rizqy Yourin — Portfolio
 
-Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, a grouped tech stack, and freeCodeCamp and GitHub progress panels.
+Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, a freelance service card for Fastwork, three embedded Threads posts, a grouped tech stack, and freeCodeCamp and GitHub progress panels.
 
 The site is a **Next.js static export** served as Cloudflare Workers static assets at [yourin.my.id](https://yourin.my.id).
 
@@ -59,6 +59,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 
 - **Introduction** (`#about`) — name, a two-paragraph summary, actions to open the LinkedIn profile or the CV, and the profile photo.
 - **Built Projects** (`#projects`) — Kohi Cafe, QPAY, and Ticketin. Each card links to its live site.
+- **Freelance Services** (`#services`) — a Fastwork service card for AI chatbot implementation, with the demo video poster, package highlights, and the promotional price.
 - **Threads** — three posts rendered through the Threads embed script.
 - **Tech Stack** — frontend, backend, database, and tools & deployment groups, each with a mark per technology.
 - **Progress** (`#progress`) — two cards. freeCodeCamp shows total points and a rolling-year activity graph; GitHub shows the year's contribution count and its calendar-year graph. Both link to the matching profile.
@@ -70,6 +71,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 - Mobile navigation opens from the header, closes on Escape, and returns focus to the toggle button.
 - Hero elements enter on load; each section reveals once on scroll. Project cards and stack groups add restrained hover feedback.
 - Images show a skeleton while loading and a text fallback if they fail to load.
+- The service media shows a poster image and only loads the privacy-friendly YouTube embed after the play button is pressed.
 - Threads embeds track their own load state and fall back to a plain "View on Threads" link.
 - The progress graphs shade each day by its activity intensity — freeCodeCamp derives the intensity from solved challenges, GitHub ships its own four levels. Each graph scrolls horizontally on narrow screens and shows when its snapshot was taken.
 - A skip link jumps straight to the introduction.
