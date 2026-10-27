@@ -51,11 +51,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const DAY_MS = 86_400_000;
 const ROLLING_YEAR_DAYS = 364;
 
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 26 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as const },
-});
+// The hero entrance is a CSS animation, not Motion state: above-the-fold content must paint
+// without waiting for hydration, otherwise the largest element stays invisible until the
+// client bundle has loaded.
 const scrollReveal = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
@@ -299,15 +297,15 @@ export default function Home() {
       <main>
         <section className="hero" id="about" aria-labelledby="intro-title" tabIndex={-1}>
           <div className="hero-copy"> 
-            <motion.h1 id="intro-title" {...reveal(0.12)}>Ahmad Rizqy Yourin</motion.h1>
-            <motion.p {...reveal(0.32)}>Computer Engineering graduate from Diponegoro University with 1+ years of experience in Fullstack development websites.</motion.p>
-            <motion.p {...reveal(0.52)}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</motion.p>
-            <motion.div className="hero-actions" {...reveal(0.72)}>
+            <h1 id="intro-title" className="reveal-up" style={{ animationDelay: '0.12s' }}>Ahmad Rizqy Yourin</h1>
+            <p className="reveal-up" style={{ animationDelay: '0.32s' }}>Computer Engineering graduate from Diponegoro University with 1+ years of experience in Fullstack development websites.</p>
+            <p className="reveal-up" style={{ animationDelay: '0.52s' }}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</p>
+            <div className="hero-actions reveal-up" style={{ animationDelay: '0.72s' }}>
               <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
               <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
-            </motion.div>
+            </div>
           </div>
-          <motion.div className="profile-photo-frame" {...reveal(0.24)}><SkeletonImage className="profile-photo" src="/images/profile.webp" alt="Ahmad Rizqy Yourin" width={1100} height={917} priority fallbackLabel="Photo unavailable" /></motion.div>
+          <div className="profile-photo-frame reveal-up" style={{ animationDelay: '0.24s' }}><SkeletonImage className="profile-photo" src="/images/profile.webp" alt="Ahmad Rizqy Yourin" width={1100} height={917} priority fallbackLabel="Photo unavailable" /></div>
         </section>
 
         <section className="projects-section" id="projects" aria-labelledby="projects-title">

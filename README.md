@@ -80,16 +80,19 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 
 Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives. Deployed with Wrangler to Cloudflare Workers.
 
-At runtime the page loads the Satoshi webfont from Fontshare, the Threads embed script from `threads.com`, and the Cloudflare Web Analytics beacon from `static.cloudflareinsights.com`. No other requests are made.
+At runtime the page loads the Threads embed script from `threads.com` and the Cloudflare Web Analytics beacon from `static.cloudflareinsights.com`. Both fonts and images are served from the Worker itself, and Satoshi ships as self-hosted `woff2` through `next/font/local` (no request to Fontshare).
 
 ## Files
 
 - `next.config.ts`: static export (`output: 'export'`) and `images.unoptimized`, because a static export has no image optimizer.
 - `wrangler.jsonc`: Worker name and the `out/` assets directory, with `404-page` not-found handling.
 - `src/app/page.tsx`: page composition, reveal animations, and the project, Threads, and tech stack sections.
-- `src/app/layout.tsx`: metadata, the canonical URL, the Fontshare stylesheet link, and the Web Analytics beacon.
-- `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`.
-- `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles.
+- `src/app/layout.tsx`: metadata, the canonical URL, the JSON-LD `@graph` (Person, WebSite, ProfilePage, Service), the self-hosted font class, and the Web Analytics beacon.
+- `src/app/fonts.ts`, `src/app/fonts/*.woff2`: Satoshi 400/500/700 loaded with `next/font/local`, preloaded and paired with a size-adjusted Arial fallback.
+- `src/app/opengraph-image.tsx`: the 1200×630 social card, generated at build time into `out/opengraph-image` and referenced by `og:image` and `twitter:image`.
+- `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`. `lastmod` comes from the newest progress snapshot, so it stops moving on deploys that change nothing.
+- `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles, and the hero's CSS entrance (so above-the-fold content paints without JavaScript).
+- `public/_headers`: browser caching for `/_next/static/*`, `/images/*`, and the extensionless OG image, which needs an explicit `Content-Type`.
 - `src/components/ui/animated-theme-toggler.tsx`: theme toggle.
 - `src/components/ui/button.tsx`, `dialog.tsx`: shadcn/Radix primitives kept for reuse; nothing imports them yet.
 - `src/lib/portfolio.ts`: project, skill, and certification data. The page renders the skill groups.

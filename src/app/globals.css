@@ -41,13 +41,13 @@
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --font-sans: "Satoshi", Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-satoshi, Arial, Helvetica, sans-serif);
   --font-mono: ui-monospace, monospace;
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 32px; }
-body { margin: 0; background: var(--canvas); color: var(--foreground); font-family: "Satoshi", Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--canvas); color: var(--foreground); font-family: var(--font-satoshi, Arial, Helvetica, sans-serif); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button { color: inherit; font: inherit; cursor: pointer; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -56,6 +56,15 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px s
 h1, h2, h3, p { margin: 0; }
 .skip-link { position: fixed; left: 24px; top: -100px; z-index: 100; padding: 14px 20px; background: var(--primary); color: var(--primary-text); border-radius: 8px; }
 .skip-link:focus { top: 16px; }
+/* Hero entrance runs in CSS so the text and photo are painted without JavaScript. The delay
+   rides on an inline animation-delay; everything else lives here, so the server-rendered HTML
+   never ships an inline opacity:0. */
+@keyframes reveal-up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+.reveal-up { animation: reveal-up .9s cubic-bezier(.16, 1, .3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .reveal-up { animation: none; } }
+/* Scroll reveals below the fold still rely on Motion's inline opacity:0. Without JavaScript they
+   would never appear, so unhide them when scripting is unavailable. */
+@media (scripting: none) { .portfolio-window [style] { opacity: 1 !important; transform: none !important; } }
 .portfolio-window { max-width: 1320px; margin: 48px auto; padding: 48px 64px 36px; border: 1px solid var(--border); border-radius: 46px; background: var(--background); box-shadow: var(--window-shadow); }
 .site-header { display: flex; align-items: center; gap: 24px; min-height: 44px; }
 .traffic-lights { display: flex; align-items: center; gap: 9px; min-height: 44px; padding-right: 16px; }
@@ -204,7 +213,7 @@ iframe.text-post-media { display: block; width: 100% !important; min-width: 0 !i
   .footer-links a:hover { transform: translateY(-3px); background: var(--panel); }
 }
 .footer-links button { border: 0; background: none; font-size: 12px; }
-.project-dialog { font-family: "Satoshi", Arial, Helvetica, sans-serif; }
+.project-dialog { font-family: var(--font-satoshi, Arial, Helvetica, sans-serif); }
 .project-dialog h2 { font-size: 28px; margin: 8px 32px 14px 0; }
 .project-dialog [id][data-slot], .project-dialog > p { line-height: 1.7; color: var(--muted-foreground); font-size: 15px; }
 .dialog-preview { position: relative; aspect-ratio: 1.8; display: grid; place-items: center; border-radius: 14px; margin-top: 24px; color: var(--muted-foreground); font-size: 14px; overflow: hidden; }
