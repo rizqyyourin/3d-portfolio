@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ComponentType, CSSProperties } from 'react';
 import Image, { type ImageProps } from 'next/image';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowRight, ArrowUpRight, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, PaperPlaneTilt, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
+import { ArrowRight, ArrowUpRight, Check, Code, Database, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, InstagramLogoIcon, LinkedinLogoIcon, List, PaperPlaneTilt, Play, Stack, ThreadsLogoIcon, Wrench, X } from '@phosphor-icons/react';
 import { SiCodeigniter, SiCss, SiCursor, SiDocker, SiEslint, SiFreecodecamp, SiGit, SiGithubcopilot, SiGithubactions, SiGo, SiHtml5, SiJavascript, SiKubernetes, SiLaravel, SiMysql, SiNextdotjs, SiNodedotjs, SiNuxt, SiOpencode, SiPhp, SiPostgresql, SiPostman, SiReact, SiRedis, SiSocket, SiSwagger, SiTypescript, SiVuedotjs } from '@icons-pack/react-simple-icons';
 import { skills } from '@/lib/portfolio';
 import { freeCodeCamp } from '@/lib/freecodecamp';
@@ -20,6 +20,19 @@ const featuredProjects = [
   { name: 'Kohi Cafe', description: 'F&B CMS website built with Next.js', image: '/images/cafe.webp', url: 'https://cafe.yourin.my.id', className: 'project-cafe', detail: 'A cafe website with a content management system, built with Next.js.' },
   { name: 'QPAY', description: 'AI-assisted POS website, built with Laravel', image: '/images/qpay.webp', url: 'https://qpay.yourin.my.id', className: 'project-qpay', detail: 'An AI-assisted point-of-sale website built with Laravel.' },
   { name: 'Ticketin', description: 'Customer experience inspired by my latest work', image: '/images/ticketin.webp', url: 'https://ticketin.yourin.my.id', className: 'project-ticket', detail: 'A customer experience project inspired by my latest work.' },
+];
+const services = [
+  {
+    name: 'AI Chatbot for Your Business Website',
+    description: 'An AI chatbot that answers customer questions right on your business website, captures leads, and hands the conversation over to WhatsApp when it is not sure.',
+    image: '/images/chatbot.webp',
+    imageAlt: 'AI chatbot demo answering customer questions on a cafe website',
+    video: '9uiaC-mX_tA',
+    url: 'https://fastwork.id/user/yourin/chatbot-30934056',
+    price: 'Rp850.000',
+    originalPrice: 'Rp899.000',
+    features: ['Answers 24/7', 'Leads to WhatsApp', '3 revisions', 'Ready in 2–4 days'],
+  },
 ];
 type TechIcon = ComponentType<{ size?: number; color?: string }>;
 const techIcons: Record<string, TechIcon> = { HTML5: SiHtml5, CSS3: SiCss, JavaScript: SiJavascript, TypeScript: SiTypescript, 'React.js': SiReact, 'Vue.js': SiVuedotjs, 'Next.js': SiNextdotjs, 'Nuxt.js': SiNuxt, PHP: SiPhp, Go: SiGo, Laravel: SiLaravel, 'CodeIgniter 3': SiCodeigniter, 'Node.js': SiNodedotjs, MySQL: SiMysql, PostgreSQL: SiPostgresql, Redis: SiRedis, Docker: SiDocker, Kubernetes: SiKubernetes, ESLint: SiEslint, Postman: SiPostman, 'REST API': SiSwagger, WebSocket: SiSocket, Git: SiGit, 'CI/CD': SiGithubactions, Mockoon: SiSwagger, 'VS Code': SiGithubcopilot, Cursor: SiCursor, Opencode: SiOpencode };
@@ -38,11 +51,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const DAY_MS = 86_400_000;
 const ROLLING_YEAR_DAYS = 364;
 
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 26 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as const },
-});
+// The hero entrance is a CSS animation, not Motion state: above-the-fold content must paint
+// without waiting for hydration, otherwise the largest element stays invisible until the
+// client bundle has loaded.
 const scrollReveal = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
@@ -149,6 +160,48 @@ function SkeletonImage({ fallbackLabel, className, alt, ...props }: ImageProps &
   </>;
 }
 
+type Service = (typeof services)[number];
+
+function ServiceCard({ service, delay }: { service: Service; delay: number }) {
+  const [playing, setPlaying] = useState(false);
+
+  return <motion.article className="service-card" {...scrollReveal(delay)}>
+    <div className="service-media">
+      {playing ? <iframe
+        className="service-video"
+        src={`https://www.youtube-nocookie.com/embed/${service.video}?autoplay=1&rel=0`}
+        title={`${service.name} demo video`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      /> : <>
+        <SkeletonImage className="service-image" src={service.image} alt={service.imageAlt} fill sizes="(max-width: 1000px) 100vw, 52vw" fallbackLabel="Preview unavailable" />
+        <button className="service-play" type="button" onClick={() => setPlaying(true)} aria-label="Play the AI chatbot demo video">
+          <span className="service-play-icon"><Play size={20} weight="fill" aria-hidden="true" /></span>
+        </button>
+      </>}
+    </div>
+    <div className="service-body">
+      <h3>{service.name}</h3>
+      <p className="service-description">{service.description}</p>
+      <ul className="service-features">
+        {service.features.map(feature => <li key={feature}><Check size={13} weight="bold" aria-hidden="true" />{feature}</li>)}
+      </ul>
+      <div className="service-footer">
+        <div className="service-price">
+          <span className="service-price-label">Starting from</span>
+          <span className="service-price-row">
+            <s>{service.originalPrice}</s>
+            <strong>{service.price}</strong>
+            <span className="service-discount">Save 5%</span>
+          </span>
+        </div>
+        <a className="button button-primary service-cta" href={service.url} target="_blank" rel="noreferrer">Order on Fastwork<ArrowUpRight size={16} /></a>
+      </div>
+    </div>
+  </motion.article>;
+}
+
 function ThreadCard({ url }: { url: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -228,7 +281,7 @@ export default function Home() {
       <header className="site-header">
         <a className="traffic-lights" href="#about" aria-label="Back to introduction"><span /><span /><span /></a>
         <nav className="desktop-navigation" aria-label="Main navigation">
-          <a href="#about">About</a><a href="#projects">Projects</a><a href={RESUME_URL} target="_blank" rel="noreferrer">My CV</a><a href="mailto:rizqyyourin6@gmail.com">Contact</a>
+          <a href="#about">About</a><a href="#projects">Projects</a><a href="#services">Services</a><a href={RESUME_URL} target="_blank" rel="noreferrer">My CV</a><a href="mailto:rizqyyourin6@gmail.com">Contact</a>
         </nav>
         <button ref={menuButtonRef} className="menu-toggle" type="button" aria-label={`${menuOpen ? 'Close' : 'Open'} navigation menu`} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(open => !open)}>
           {menuOpen ? <X size={19} /> : <List size={20} />}
@@ -236,23 +289,23 @@ export default function Home() {
         <AnimatedThemeToggler />
         <AnimatePresence initial={false}>
           {menuOpen && <motion.nav id="mobile-navigation" className="mobile-navigation" aria-label="Main navigation" aria-hidden={!menuOpen} inert={!menuOpen} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}>
-            <a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#projects" onClick={() => setMenuOpen(false)}>Projects</a><a href={RESUME_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>My CV</a><a href="mailto:rizqyyourin6@gmail.com" onClick={() => setMenuOpen(false)}>Contact</a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#projects" onClick={() => setMenuOpen(false)}>Projects</a><a href="#services" onClick={() => setMenuOpen(false)}>Services</a><a href={RESUME_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>My CV</a><a href="mailto:rizqyyourin6@gmail.com" onClick={() => setMenuOpen(false)}>Contact</a>
           </motion.nav>}
         </AnimatePresence>
       </header>
 
       <main>
         <section className="hero" id="about" aria-labelledby="intro-title" tabIndex={-1}>
-          <div className="hero-copy">
-            <motion.h1 id="intro-title" {...reveal(0.12)}>Ahmad Rizqy Yourin</motion.h1>
-            <motion.p {...reveal(0.32)}>Computer Engineering graduate from Diponegoro University with experience in fullstack development websites.</motion.p>
-            <motion.p {...reveal(0.52)}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</motion.p>
-            <motion.div className="hero-actions" {...reveal(0.72)}>
+          <div className="hero-copy"> 
+            <h1 id="intro-title" className="reveal-up" style={{ animationDelay: '0.12s' }}>Ahmad Rizqy Yourin</h1>
+            <p className="reveal-up" style={{ animationDelay: '0.32s' }}>Computer Engineering graduate from Diponegoro University with 1+ years of experience in Fullstack development websites.</p>
+            <p className="reveal-up" style={{ animationDelay: '0.52s' }}>Experienced in both monolith and microservices systems, with strong adaptability, problem-solving, and collaboration skills.</p>
+            <div className="hero-actions reveal-up" style={{ animationDelay: '0.72s' }}>
               <a className="button button-primary" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><PaperPlaneTilt size={16} />Let&apos;s connect</a>
               <a className="button button-secondary" href={RESUME_URL} target="_blank" rel="noreferrer"><DownloadSimpleIcon size={20} />View CV</a>
-            </motion.div>
+            </div>
           </div>
-          <motion.div className="profile-photo-frame" {...reveal(0.24)}><SkeletonImage className="profile-photo" src="/images/profile.webp" alt="Ahmad Rizqy Yourin" width={1100} height={917} priority fallbackLabel="Photo unavailable" /></motion.div>
+          <div className="profile-photo-frame reveal-up" style={{ animationDelay: '0.24s' }}><SkeletonImage className="profile-photo" src="/images/profile.webp" alt="Ahmad Rizqy Yourin" width={1100} height={917} priority fallbackLabel="Photo unavailable" /></div>
         </section>
 
         <section className="projects-section" id="projects" aria-labelledby="projects-title">
@@ -262,6 +315,13 @@ export default function Home() {
               <span className={`project-cover ${item.className}`}><SkeletonImage className="project-image" src={item.image} alt={`${item.name} project preview`} fill sizes="(max-width: 640px) 100vw, 33vw" fallbackLabel="Preview unavailable" /><ArrowUpRight className="project-arrow" size={20} /></span>
               <span className="project-name">{item.name}</span><span className="project-description">{item.description}</span>
             </motion.a>)}
+          </div>
+        </section>
+
+        <section className="services-section" id="services" aria-labelledby="services-title">
+          <motion.h2 id="services-title" {...scrollReveal()}>Freelance Services</motion.h2>
+          <div className="service-list">
+            {services.map((service, index) => <ServiceCard key={service.name} service={service} delay={index * 0.12} />)}
           </div>
         </section>
 

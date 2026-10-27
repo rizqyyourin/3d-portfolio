@@ -1,6 +1,6 @@
 # Ahmad Rizqy Yourin — Portfolio
 
-Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, three embedded Threads posts, a grouped tech stack, and freeCodeCamp and GitHub progress panels.
+Personal portfolio for Ahmad Rizqy Yourin, a fullstack developer based in Jakarta. The page is framed as a rounded, macOS-inspired window: a two-column introduction with a profile photo, three featured projects, a freelance service card for Fastwork, three embedded Threads posts, a grouped tech stack, and freeCodeCamp and GitHub progress panels.
 
 The site is a **Next.js static export** served as Cloudflare Workers static assets at [yourin.my.id](https://yourin.my.id).
 
@@ -59,6 +59,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 
 - **Introduction** (`#about`) — name, a two-paragraph summary, actions to open the LinkedIn profile or the CV, and the profile photo.
 - **Built Projects** (`#projects`) — Kohi Cafe, QPAY, and Ticketin. Each card links to its live site.
+- **Freelance Services** (`#services`) — a Fastwork service card for AI chatbot implementation, with the demo video poster, package highlights, and the promotional price.
 - **Threads** — three posts rendered through the Threads embed script.
 - **Tech Stack** — frontend, backend, database, and tools & deployment groups, each with a mark per technology.
 - **Progress** (`#progress`) — two cards. freeCodeCamp shows total points and a rolling-year activity graph; GitHub shows the year's contribution count and its calendar-year graph. Both link to the matching profile.
@@ -70,6 +71,7 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 - Mobile navigation opens from the header, closes on Escape, and returns focus to the toggle button.
 - Hero elements enter on load; each section reveals once on scroll. Project cards and stack groups add restrained hover feedback.
 - Images show a skeleton while loading and a text fallback if they fail to load.
+- The service media shows a poster image and only loads the privacy-friendly YouTube embed after the play button is pressed.
 - Threads embeds track their own load state and fall back to a plain "View on Threads" link.
 - The progress graphs shade each day by its activity intensity — freeCodeCamp derives the intensity from solved challenges, GitHub ships its own four levels. Each graph scrolls horizontally on narrow screens and shows when its snapshot was taken.
 - A skip link jumps straight to the introduction.
@@ -78,16 +80,19 @@ Rolling back means deleting both custom domains and adding `A` records for `your
 
 Next.js App Router, TypeScript, Tailwind CSS, Motion, Phosphor Icons, and simple-icons, with Radix and lucide behind the UI primitives. Deployed with Wrangler to Cloudflare Workers.
 
-At runtime the page loads the Satoshi webfont from Fontshare, the Threads embed script from `threads.com`, and the Cloudflare Web Analytics beacon from `static.cloudflareinsights.com`. No other requests are made.
+At runtime the page loads the Threads embed script from `threads.com` and the Cloudflare Web Analytics beacon from `static.cloudflareinsights.com`. Both fonts and images are served from the Worker itself, and Satoshi ships as self-hosted `woff2` through `next/font/local` (no request to Fontshare).
 
 ## Files
 
 - `next.config.ts`: static export (`output: 'export'`) and `images.unoptimized`, because a static export has no image optimizer.
 - `wrangler.jsonc`: Worker name and the `out/` assets directory, with `404-page` not-found handling.
 - `src/app/page.tsx`: page composition, reveal animations, and the project, Threads, and tech stack sections.
-- `src/app/layout.tsx`: metadata, the canonical URL, the Fontshare stylesheet link, and the Web Analytics beacon.
-- `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`.
-- `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles.
+- `src/app/layout.tsx`: metadata, the canonical URL, the JSON-LD `@graph` (Person, WebSite, ProfilePage, Service), the self-hosted font class, and the Web Analytics beacon.
+- `src/app/fonts.ts`, `src/app/fonts/*.woff2`: Satoshi 400/500/700 loaded with `next/font/local`, preloaded and paired with a size-adjusted Arial fallback.
+- `src/app/opengraph-image.tsx`: the 1200×630 social card, generated at build time into `out/opengraph-image` and referenced by `og:image` and `twitter:image`.
+- `src/app/robots.ts`, `src/app/sitemap.ts`: generated `robots.txt` and `sitemap.xml`. `lastmod` comes from the newest progress snapshot, so it stops moving on deploys that change nothing.
+- `src/app/globals.css`: window frame, light and dark variables, responsive sections, skeleton styles, and the hero's CSS entrance (so above-the-fold content paints without JavaScript).
+- `public/_headers`: browser caching for `/_next/static/*`, `/images/*`, and the extensionless OG image, which needs an explicit `Content-Type`.
 - `src/components/ui/animated-theme-toggler.tsx`: theme toggle.
 - `src/components/ui/button.tsx`, `dialog.tsx`: shadcn/Radix primitives kept for reuse; nothing imports them yet.
 - `src/lib/portfolio.ts`: project, skill, and certification data. The page renders the skill groups.

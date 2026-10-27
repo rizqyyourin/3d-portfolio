@@ -1,0 +1,17 @@
+# Workers static assets ignores this file when serving; it only applies the rules below.
+# HTML stays on the default `max-age=0, must-revalidate` so a deploy is picked up immediately.
+
+# Fingerprinted build output never changes for a given URL.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static export writes the generated OG card without a file extension, so the MIME type has to
+# be declared here or social crawlers receive application/octet-stream.
+/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=31536000, immutable
+
+# Stable filenames, so they get a long-but-revalidating cache instead of immutable.
+# Profile photo is the LCP image; caching it keeps repeat views fast.
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800

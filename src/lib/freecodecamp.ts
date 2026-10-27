@@ -12,7 +12,7 @@ export type FreeCodeCampProfile = {
 
 export const freeCodeCamp: FreeCodeCampProfile = {
   "username": "yourin",
-  "points": 867,
+  "points": 913,
   "calendar": {
     "2021-10-23": 1,
     "2022-01-25": 1,
@@ -83,7 +83,9 @@ export const freeCodeCamp: FreeCodeCampProfile = {
     "2026-10-07": 2,
     "2026-10-08": 1,
     "2026-10-15": 3,
-    "2026-10-19": 1
+    "2026-10-19": 1,
+    "2026-10-20": 1,
+    "2026-10-21": 3
   },
-  "syncedAt": "2026-10-19T05:53:27.730Z"
+  "syncedAt": "2026-10-27T03:30:33.273Z"
 };

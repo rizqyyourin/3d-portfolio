@@ -10,8 +10,9 @@ const OUTPUT_DIR = 'public/images';
 const QUALITY = 90;
 
 // Render width in CSS pixels x2, measured from the current layout:
-// the hero photo column is about 510px wide and each project cover about 377px.
-const WIDTHS = { profile: 1100, cafe: 960, qpay: 960, ticketin: 960 };
+// the hero photo column is about 510px wide, each project cover about 377px, and the
+// service card media about 600px.
+const WIDTHS = { profile: 1100, cafe: 960, qpay: 960, ticketin: 960, chatbot: 1280 };
 
 for (const file of (await readdir(SOURCE_DIR)).sort()) {
   if (!file.endsWith('.png')) continue;
